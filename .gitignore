@@ -1,0 +1,57 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Ambientes virtuais ---
+.venv/
+venv/
+env/
+
+# --- Segredos / configuração local ---
+.env
+.env.*
+!.env.example
+
+# --- Dados derivados (regeneráveis por scripts) ---
+data/processed/
+data/vectorstore/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.tmp
+
+# --- Modelos, checkpoints e pesos ---
+# Ancorados na raiz para não ignorar pacotes de código com o mesmo nome (ex.: src/.../models/).
+/models/
+/checkpoints/
+/outputs/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+*.ckpt
+
+# --- Logs ---
+logs/
+*.log
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- IDE / SO ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

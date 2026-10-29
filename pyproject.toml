@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medprotocol-ai"
+version = "0.1.0"
+description = "Assistente educacional de apoio à consulta de protocolos hospitalares fictícios (DM2) — FIAP Tech Challenge Fase 3."
+readme = "README.md"
+requires-python = ">=3.11"
+# Dependências de runtime entram apenas na etapa que as utiliza
+# (LangChain, LangGraph, Chroma/FAISS, Transformers/PEFT, Streamlit).
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

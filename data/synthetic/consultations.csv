@@ -1,0 +1,11 @@
+consultation_id,patient_id,data,tipo,protocol_id,resumo
+CON-0001,PAC-0001,2026-03-10,ambulatorial,PROT-DM2-001,"Consulta de rotina. Paciente assintomático, refere boa adesão à metformina. Exames solicitados conforme periodicidade do protocolo."
+CON-0002,PAC-0002,2025-11-20,ambulatorial,PROT-DM2-001,"Retorno sem queixas. HbA1c dentro da meta simulada. Orientado retorno em 6 meses."
+CON-0003,PAC-0003,2026-05-12,ambulatorial,PROT-DM2-001,"HbA1c acima da meta simulada. Reforçadas orientações alimentares. Função renal não avaliada no período."
+CON-0004,PAC-0004,2026-04-02,ambulatorial,PROT-DM2-003,"TFG estimada em queda em relação ao exame anterior. Albuminúria elevada. Encaminhado para avaliação com nefrologista."
+CON-0005,PAC-0005,2026-02-15,ambulatorial,PROT-DM2-001,"HbA1c elevada. Paciente relata dificuldade de adesão ao tratamento. Discutida intensificação terapêutica, pendente decisão médica."
+CON-0006,PAC-0006,2026-06-20,internacao,PROT-DM2-002,"Internado para tratamento de pneumonia. Glicemia capilar de 58 mg/dL às 6h, paciente consciente. Oferecidos 15 g de carboidrato de absorção rápida; glicemia capilar de 104 mg/dL após 15 minutos. Médico responsável notificado."
+CON-0007,PAC-0007,2026-04-25,ambulatorial,PROT-DM2-003,"Exame dos pés sem alterações. Avaliação de fundo de olho não registrada no período."
+CON-0008,PAC-0008,2026-06-01,ambulatorial,PROT-DM2-001,"Controle glicêmico dentro da meta simulada. LDL acima do limite simulado; ajuste de hipolipemiante a critério médico."
+CON-0009,PAC-0009,2026-01-20,ambulatorial,PROT-DM2-003,"TFG reduzida e albuminúria aumentada. Solicitada reavaliação da função renal em 3 meses."
+CON-0010,PAC-0010,2026-05-28,ambulatorial,PROT-DM2-001,"Primeira consulta no serviço. Sem registro de HbA1c no serviço. Exames trazidos de outro serviço não foram digitalizados."

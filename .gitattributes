@@ -1,0 +1,6 @@
+# Fins de linha LF em todos os sistemas: mantém os hashes dos CSVs (build_metadata) e os
+# diffs do dataset idênticos entre Windows, Linux e macOS.
+* text=auto eol=lf
+
+*.db binary
+*.sqlite binary

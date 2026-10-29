@@ -1,0 +1,11 @@
+patient_id,sexo,ano_nascimento,ano_diagnostico_dm2,comorbidades,medicamentos_em_uso,alergias
+PAC-0001,M,1958,2010,hipertensao,metformina;losartana,nenhuma
+PAC-0002,F,1970,2019,dislipidemia,metformina;sinvastatina,nenhuma
+PAC-0003,F,1961,2015,hipertensao;dislipidemia,metformina;losartana,nenhuma
+PAC-0004,M,1955,2008,hipertensao;doenca_renal_cronica,metformina;insulina_nph;enalapril,sulfonamidas
+PAC-0005,F,1982,2021,obesidade,metformina;dapagliflozina,nenhuma
+PAC-0006,M,1949,2001,hipertensao;cardiopatia_isquemica,insulina_glargina;insulina_regular;acido_acetilsalicilico,penicilina
+PAC-0007,F,1966,2012,nenhuma,metformina;gliclazida,nenhuma
+PAC-0008,M,1975,2017,dislipidemia,metformina;atorvastatina,dipirona
+PAC-0009,F,1960,2009,hipertensao,metformina;insulina_nph;losartana,nenhuma
+PAC-0010,M,1968,2016,nenhuma,metformina;sitagliptina,nenhuma
