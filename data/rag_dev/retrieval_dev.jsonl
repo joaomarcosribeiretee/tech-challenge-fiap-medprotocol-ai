@@ -1,0 +1,30 @@
+{"query_id": "DEV-001", "escopo": "dentro", "pergunta": "Qual é a finalidade do protocolo de acompanhamento ambulatorial?", "refs_esperadas": ["PROT-DM2-001#S1"]}
+{"query_id": "DEV-002", "escopo": "dentro", "pergunta": "Quem pode ser incluído no acompanhamento ambulatorial de diabetes do hospital?", "refs_esperadas": ["PROT-DM2-001#S2"]}
+{"query_id": "DEV-003", "escopo": "dentro", "pergunta": "De quanto em quanto tempo o colesterol LDL precisa ser dosado?", "refs_esperadas": ["PROT-DM2-001#S3"]}
+{"query_id": "DEV-004", "escopo": "dentro", "pergunta": "Qual é o alvo de hemoglobina glicada adotado pela instituição?", "refs_esperadas": ["PROT-DM2-001#S3"]}
+{"query_id": "DEV-005", "escopo": "dentro", "pergunta": "A creatinina deve ser medida com qual frequência?", "refs_esperadas": ["PROT-DM2-001#S3", "PROT-DM2-003#S3"]}
+{"query_id": "DEV-006", "escopo": "dentro", "pergunta": "Como saber se um exame está atrasado em relação à data de referência?", "refs_esperadas": ["PROT-DM2-001#S4"]}
+{"query_id": "DEV-007", "escopo": "dentro", "pergunta": "Como é calculada a data da próxima verificação de um exame?", "refs_esperadas": ["PROT-DM2-001#S4"]}
+{"query_id": "DEV-008", "escopo": "dentro", "pergunta": "Esse protocolo ambulatorial pode ser aplicado fora do ambiente de simulação?", "refs_esperadas": ["PROT-DM2-001#LIM"]}
+{"query_id": "DEV-009", "escopo": "dentro", "pergunta": "Em que situações o caso precisa ser levado ao médico responsável no acompanhamento ambulatorial?", "refs_esperadas": ["PROT-DM2-001#REV"]}
+{"query_id": "DEV-010", "escopo": "dentro", "pergunta": "Para que serve o protocolo de hipoglicemia na internação?", "refs_esperadas": ["PROT-DM2-002#S1"]}
+{"query_id": "DEV-011", "escopo": "dentro", "pergunta": "A partir de qual valor de glicemia capilar se considera hipoglicemia?", "refs_esperadas": ["PROT-DM2-002#S2"]}
+{"query_id": "DEV-012", "escopo": "dentro", "pergunta": "Quantos gramas de carboidrato oferecer a um paciente lúcido com glicose baixa?", "refs_esperadas": ["PROT-DM2-002#S3"]}
+{"query_id": "DEV-013", "escopo": "dentro", "pergunta": "O que precisa ser anotado no prontuário após um episódio de glicose baixa?", "refs_esperadas": ["PROT-DM2-002#S5"]}
+{"query_id": "DEV-014", "escopo": "dentro", "pergunta": "Depois de um episódio de hipoglicemia, quem deve rever a insulina?", "refs_esperadas": ["PROT-DM2-002#REV"]}
+{"query_id": "DEV-015", "escopo": "dentro", "pergunta": "O protocolo de hipoglicemia estabelece doses de insulina?", "refs_esperadas": ["PROT-DM2-002#LIM"]}
+{"query_id": "DEV-016", "escopo": "dentro", "pergunta": "Quais complicações do diabetes são rastreadas periodicamente?", "refs_esperadas": ["PROT-DM2-003#S1"]}
+{"query_id": "DEV-017", "escopo": "dentro", "pergunta": "Quais pacientes entram no protocolo de rastreamento de complicações?", "refs_esperadas": ["PROT-DM2-003#S2"]}
+{"query_id": "DEV-018", "escopo": "dentro", "pergunta": "Qual valor de albuminúria é considerado alerta?", "refs_esperadas": ["PROT-DM2-003#S3"]}
+{"query_id": "DEV-019", "escopo": "dentro", "pergunta": "A cada quanto tempo deve ser repetida a relação albumina/creatinina urinária?", "refs_esperadas": ["PROT-DM2-003#S3"]}
+{"query_id": "DEV-020", "escopo": "dentro", "pergunta": "O que fazer quando não há avaliação da retina registrada no último ano?", "refs_esperadas": ["PROT-DM2-003#S5"]}
+{"query_id": "DEV-021", "escopo": "dentro", "pergunta": "O protocolo de complicações permite classificar o estágio da doença renal?", "refs_esperadas": ["PROT-DM2-003#LIM"]}
+{"query_id": "DEV-022", "escopo": "dentro", "pergunta": "Quem deve avaliar um resultado renal em alerta?", "refs_esperadas": ["PROT-DM2-003#REV", "PROT-DM2-003#S3"]}
+{"query_id": "DEV-101", "escopo": "fora", "pergunta": "Qual é a capital da Austrália?", "refs_esperadas": []}
+{"query_id": "DEV-102", "escopo": "fora", "pergunta": "Qual a dose de amoxicilina para otite em crianças?", "refs_esperadas": []}
+{"query_id": "DEV-103", "escopo": "fora", "pergunta": "Como tratar uma crise de asma no pronto-socorro?", "refs_esperadas": []}
+{"query_id": "DEV-104", "escopo": "fora", "pergunta": "Qual o horário de visitas da enfermaria?", "refs_esperadas": []}
+{"query_id": "DEV-105", "escopo": "fora", "pergunta": "Quais vacinas são recomendadas para adultos com diabetes?", "refs_esperadas": []}
+{"query_id": "DEV-106", "escopo": "fora", "pergunta": "Qual é a meta de pressão arterial para pacientes diabéticos?", "refs_esperadas": []}
+{"query_id": "DEV-107", "escopo": "fora", "pergunta": "Como fazer o cálculo do índice de massa corporal?", "refs_esperadas": []}
+{"query_id": "DEV-108", "escopo": "fora", "pergunta": "Que exames pré-operatórios são necessários para cirurgia de catarata?", "refs_esperadas": []}

@@ -14,6 +14,7 @@
 | `synthetic/` | Pacientes, consultas e exames sintéticos | CSV | Sim |
 | `finetune/` | Perguntas/respostas de **treino** | JSONL | Sim |
 | `eval/` | Perguntas/respostas de **avaliação**, separadas do treino | JSONL | Sim |
+| `rag_dev/` | Perguntas de **desenvolvimento** do retriever (calibração e métricas); independentes de `eval/` | JSONL | Sim |
 | `processed/` | Saídas derivadas (ex.: SQLite) | — | Não (gerado por scripts) |
 | `vectorstore/` | Índices vetoriais (Chroma/FAISS) | — | Não (gerado por scripts) |
 

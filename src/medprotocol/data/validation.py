@@ -133,6 +133,17 @@ def _mask_ids(text: str) -> str:
     return ANY_ID_RE.sub("ID", text)
 
 
+def text_similarity(a: str, b: str) -> float:
+    """Similaridade (0–1) por sequência de palavras normalizadas, com IDs mascarados.
+
+    Mascarar IDs faz perguntas com o mesmo molde e pacientes diferentes aparecerem como
+    parecidas. autojunk=False evita distorção em textos longos.
+    """
+    words_a = normalize_text(_mask_ids(a)).split()
+    words_b = normalize_text(_mask_ids(b)).split()
+    return SequenceMatcher(None, words_a, words_b, autojunk=False).ratio()
+
+
 def _parse_date(value: str) -> date | None:
     try:
         return date.fromisoformat(value)
@@ -506,16 +517,11 @@ def _check_leakage(dataset: Dataset, report: ValidationReport) -> None:
         if count > 1:
             report.errors.append(f"vazamento: pergunta repetida {count} vezes: {question!r}")
 
-    # Similaridade por sequência de palavras, com IDs mascarados para que perguntas com o mesmo
-    # molde e pacientes diferentes apareçam. autojunk=False evita distorção em textos longos.
-    def words(record: dict, field_name: str) -> list[str]:
-        return normalize_text(_mask_ids(str(record.get(field_name, "")))).split()
-
     pairs = []
     for field_name in ("pergunta", "resposta_esperada"):
         for t in train:
             for e in evaluation:
-                score = SequenceMatcher(None, words(t, field_name), words(e, field_name), autojunk=False).ratio()
+                score = text_similarity(str(t.get(field_name, "")), str(e.get(field_name, "")))
                 pairs.append(SimilarPair(round(score, 3), field_name, t.get("qa_id", "?"), e.get("qa_id", "?")))
     pairs.sort(key=lambda pair: pair.score, reverse=True)
     report.similar_pairs = pairs

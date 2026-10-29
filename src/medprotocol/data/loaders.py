@@ -14,7 +14,7 @@ from __future__ import annotations
 import csv
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 SECTION_RE = re.compile(r"^## \[(?P<id>[A-Z0-9]+)\]\s+(?P<title>.+)$")
@@ -49,6 +49,7 @@ class Protocol:
     sections: dict[str, str]
     body: str
     path: Path
+    section_titles: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,7 @@ def parse_protocol(path: Path) -> Protocol:
         metadata[key.strip()] = value.strip()
 
     sections: dict[str, list[str]] = {}
+    titles: dict[str, str] = {}
     current: str | None = None
     for number, line in enumerate(lines[end + 1 :], start=end + 2):
         match = SECTION_RE.match(line)
@@ -87,6 +89,7 @@ def parse_protocol(path: Path) -> Protocol:
             if current in sections:
                 raise DatasetFormatError(f"{path.name}:{number}: seção [{current}] duplicada")
             sections[current] = []
+            titles[current] = match["title"].strip()
         elif line.startswith("## "):
             raise DatasetFormatError(f"{path.name}:{number}: seção sem ID no formato '## [ID] Título'")
         elif current is not None:
@@ -98,6 +101,7 @@ def parse_protocol(path: Path) -> Protocol:
         sections={key: "\n".join(value).strip() for key, value in sections.items()},
         body="\n".join(lines[end + 1 :]),
         path=path,
+        section_titles=titles,
     )
 
 

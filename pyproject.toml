@@ -14,6 +14,13 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+# Etapa 3 — recuperação de protocolos (embeddings locais, sem chave de API).
+# sentence-transformers instala torch (CPU) e transformers como dependências.
+rag = [
+    "langchain-core>=1.7,<2",
+    "langchain-huggingface>=1.2,<2",
+    "sentence-transformers>=6.2,<7",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
