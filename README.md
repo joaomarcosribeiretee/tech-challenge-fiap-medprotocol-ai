@@ -98,7 +98,7 @@ Detalhes do schema, das funções de consulta e do tratamento de erros: [docs/DA
 Requer o extra opcional `rag` (embeddings locais; ~1 GB de dependências + modelo de 470 MB no primeiro uso):
 
 ```powershell
-python -m pip install -e ".[dev,rag]"
+python -m pip install -e ".[dev,rag]"                            # ou com -c constraints-rag.txt (versões testadas)
 python scripts/build_index.py                                     # índice em data/vectorstore/ (não versionado)
 python scripts/search_protocols.py "Qual é a periodicidade da HbA1c?" -k 3
 python scripts/evaluate_retrieval.py                              # métricas no conjunto de desenvolvimento
@@ -112,8 +112,8 @@ Modelo, chunking, significado dos scores, métricas e limitações: [docs/RAG.md
 - [x] **Etapa 1** — Dataset sintético v1: 3 protocolos, 10 pacientes, 30 perguntas/respostas
   (ver [data/DATASET_CARD.md](data/DATASET_CARD.md))
 - [x] **Etapa 2** — Persistência em SQLite e funções de consulta (ver [docs/DATABASE.md](docs/DATABASE.md))
-- [ ] **Etapa 3** — Recuperação de protocolos com LangChain, sem LLM (implementada; **aguardando revisão**,
-  ver [docs/RAG.md](docs/RAG.md))
+- [x] **Etapa 3** — Recuperação de protocolos com LangChain, sem LLM (revisada; métricas, limitações
+  e riscos de segurança em [docs/RAG.md](docs/RAG.md))
 - [ ] Fine-tuning (LoRA/QLoRA) e comparação base × ajustado
 - [ ] Fluxos LangGraph com validação e auditoria
 - [ ] Interface Streamlit

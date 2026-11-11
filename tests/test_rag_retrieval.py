@@ -20,14 +20,18 @@ from medprotocol.rag.embeddings import (  # noqa: E402
     make_token_counter,
 )
 from medprotocol.rag.chunking import build_chunks  # noqa: E402
+from medprotocol.rag.evaluation import calibrate, load_dev_queries, rank_queries  # noqa: E402
 from medprotocol.rag.index import build_index  # noqa: E402
 from medprotocol.rag.retriever import (  # noqa: E402
+    LOWER_THRESHOLD,
     STATUS_NO_RELIABLE,
     STATUS_OK,
+    UPPER_THRESHOLD,
     ProtocolRetriever,
 )
 
-PROTOCOLS_DIR = Path(__file__).resolve().parents[1] / "data" / "protocols"
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+PROTOCOLS_DIR = DATA_DIR / "protocols"
 
 
 @pytest.fixture(scope="module")
@@ -109,6 +113,14 @@ def test_acceptance_demos_section_in_top3(retriever, question, expected_ref):
     """Demonstrações pedidas na especificação da etapa. Não são usadas para calibrar nada."""
     refs = [hit.ref for hit in retriever.retrieve(question, k=3).hits]
     assert expected_ref in refs
+
+
+def test_configured_thresholds_match_dev_calibration(store):
+    """Os limiares fixados em retriever.py devem ser os que calibrate() produz no conjunto de
+    DESENVOLVIMENTO (nunca no qa_eval). Falha se modelo, versões das dependências, prefixos,
+    chunking ou o próprio conjunto mudarem os scores: nesse caso, recalibrar (docs/RAG.md)."""
+    cal = calibrate(rank_queries(store, load_dev_queries(DATA_DIR)))
+    assert (cal.lower, cal.upper) == (LOWER_THRESHOLD, UPPER_THRESHOLD)
 
 
 def test_unrelated_question_is_not_reported_as_reliable(retriever):

@@ -15,6 +15,14 @@ Versões instaladas e testadas (Python 3.14.4, Windows, só CPU):
 langchain-core 1.7.1 · langchain-huggingface 1.2.3 · sentence-transformers 6.2.0 ·
 transformers 5.21.1 · torch 2.15.0 · numpy 2.5.4.
 
+A lista completa das versões testadas está em [`constraints-rag.txt`](../constraints-rag.txt).
+O `pyproject.toml` mantém faixas de versão; para reproduzir exatamente o ambiente em que os
+limiares foram calibrados:
+
+```powershell
+python -m pip install -e ".[dev,rag]" -c constraints-rag.txt
+```
+
 **Recursos:**
 - Cerca de 1 GB a mais no ambiente virtual, quase tudo torch.
 - 470 MB do modelo, baixado no primeiro uso para `~/.cache/huggingface/hub`.
@@ -87,6 +95,36 @@ Os hits são sempre devolvidos, inclusive nos status `incerto` e `sem_resultado_
 depuração. Quem consumir o resultado (a futura etapa com LangGraph) deve decidir o que fazer com o
 status, e não ignorá-lo.
 
+## Segurança: similaridade não é compatibilidade clínica
+
+Na auditoria da etapa, uma pergunta de sondagem (fora do conjunto de desenvolvimento e sem uso do
+`qa_eval`) mostrou o risco na prática:
+
+| Pergunta | 1º lugar | 2º lugar (seção correta) | Status |
+|---|---|---|---|
+| "Paciente desacordado com glicemia 40: o que fazer?" | `PROT-DM2-002#S3`, paciente **consciente e capaz de deglutir** ("Oferecer 15 g de carboidrato [...] por via oral"), 0,8753 | `PROT-DM2-002#S4`, paciente **inconsciente ou incapaz de deglutir** ("Não oferecer nada por via oral"), 0,8601 | **ok** |
+
+O trecho mais bem colocado descreve a conduta **oposta** à adequada para a situação perguntada.
+O protocolo não foi alterado para "corrigir" o resultado: o caso fica registrado como evidência
+de uma limitação real.
+
+O que isso significa:
+- **Similaridade semântica não garante compatibilidade clínica.** As duas seções compartilham
+  quase todo o vocabulário (hipoglicemia, glicemia, paciente, deglutir); o embedding mede essa
+  proximidade, não se a condição do paciente corresponde à condição da seção.
+- **O status `ok` não é validação de segurança.** Ele só diz que o melhor score ficou acima das
+  perguntas fora do escopo observadas. Aqui o status foi `ok` com a conduta errada em 1º lugar.
+- **O retriever não decide condutas clínicas.** Ele devolve trechos literais com referência e
+  score; não interpreta, não escolhe e não recomenda.
+- **Requisitos para a futura integração com LangGraph:**
+  - considerar sempre os múltiplos trechos recuperados, nunca só o 1º;
+  - verificar contradições relevantes entre trechos (ex.: "por via oral" × "nada por via oral")
+    e entre o trecho e a situação descrita na pergunta;
+  - encaminhar para revisão humana situações inseguras, ambíguas ou com trechos contraditórios.
+- **Recuperar múltiplos trechos não garante, isoladamente, uma resposta segura.** A seção correta
+  estar no 2º lugar só ajuda se a etapa seguinte souber distinguir as duas; a validação e a revisão
+  humana continuam obrigatórias.
+
 ## Avaliação (somente conjunto de desenvolvimento)
 
 ```powershell
@@ -109,8 +147,18 @@ fine-tuning e avaliação:
 | Hit@1 | 0,864 | 19/22 |
 | Hit@3 | 0,955 | 21/22 |
 | MRR | 0,914 | — |
-| Perguntas fora do escopo com status diferente de `ok` | 1,000 | 8/8 (**no próprio conjunto de calibração**, por isso otimista) |
+| Perguntas fora do escopo com status diferente de `ok` (`rejeicao_fora`) | 1,000 | 8/8 (**no próprio conjunto de calibração**, por isso otimista; inclui `incerto`) |
 | Perguntas do escopo com status `ok` | 0,818 | 18/22 |
+
+**Distribuição por status.** `rejeicao_fora = 1,000` **não** significa que as 8 perguntas fora do
+escopo foram rejeitadas definitivamente: 3 delas ficaram em `incerto`, a faixa de sobreposição.
+
+| Conjunto | `ok` | `incerto` | `sem_resultado_confiavel` |
+|---|---|---|---|
+| Fora do escopo (8) | 0 | 3 (DEV-104, DEV-105, DEV-106) | 5 |
+| Dentro do escopo (22) | 18 | 4 (DEV-001, DEV-004, DEV-006, DEV-018) | 0 (por construção do limiar inferior) |
+
+`incerto` também atinge acertos: DEV-006 e DEV-018 têm a seção correta em 1º lugar.
 
 **Calibração.** Os limiares saíram do mesmo conjunto:
 - menor melhor-score dentro do escopo: 0,8434 (DEV-004);
@@ -143,16 +191,19 @@ python -m pytest tests/test_rag_retrieval.py                          # modelo r
 - **Prefixos E5:** o vetor de cada pergunta e de cada trecho indexado é igual ao do texto com **um** prefixo, e diferente do texto sem prefixo, com prefixo duplicado ou com o prefixo trocado.
 - **Recuperação:** referências existentes, scores ordenados, as três demonstrações entre os 3 primeiros, perguntas sem relação sem status `ok`, entradas inválidas rejeitadas.
 - **Calibração:** relata sobreposição em vez de inventar separação, e o arredondamento mantém cada pergunta do lado certo do limiar.
+- **Coerência dos limiares (modelo real):** `calibrate()` no conjunto de desenvolvimento deve reproduzir exatamente `LOWER_THRESHOLD` e `UPPER_THRESHOLD`. As margens são pequenas (DEV-004 fica 0,0001 acima do limiar inferior), então uma mudança de versão de torch/transformers que altere os scores faz o teste falhar em vez de mudar status em silêncio. Se falhar: confirmar as versões de `constraints-rag.txt` ou recalibrar com `evaluate_retrieval.py`.
+- **Distribuição por status:** `incerto` e `sem_resultado_confiavel` são contados separadamente.
 
 ## Limitações
 
 - **Os protocolos recuperados são simulados e não têm validação clínica.** Todos estão com `status: SIMULACAO`, `natureza_regras: simulada` e `validacao_clinica: nao_realizada`, e esses metadados acompanham cada trecho recuperado. Recuperar um trecho não o torna orientação médica.
 - **`ok` não garante acerto.** No DEV-010, o status foi `ok` com a seção errada em 1º lugar. O status só indica a faixa do score.
+- **`ok` não garante segurança.** Na pergunta sobre paciente desacordado, o 1º lugar foi a seção de paciente consciente (conduta oposta), com status `ok`. Ver [Segurança](#segurança-similaridade-não-é-compatibilidade-clínica).
 - **Sinônimos e siglas:** "hemoglobina glicada" não encontrou a seção que usa a sigla "HbA1c" (DEV-004, 9º lugar).
 - **Negação:** seções com sentido oposto ficam com scores quase iguais. "Incapaz de deglutir" (`002#S4`, 0,8835) e "capaz de deglutir" (`002#S3`, 0,8724) ficaram a 0,011 de distância.
 - **Perguntas fora do escopo:** quando usam o vocabulário do domínio, recebem scores altos (DEV-105, vacinas: 0,8709). O score sozinho não separa escopo de fora do escopo; os limiares só indicam faixas.
 - O corpus é minúsculo (20 chunks). As métricas de 22 e 8 perguntas têm alta variância, e um erro muda o Hit@1 em cerca de 4,5 pontos.
-- Os limiares valem só para este modelo, revisão, prefixos e chunking. Mudar qualquer um exige rodar `evaluate_retrieval.py` de novo e recalibrar.
+- Os limiares valem só para este modelo, revisão, prefixos, chunking e versões de dependências (`constraints-rag.txt`). Mudar qualquer um exige rodar `evaluate_retrieval.py` de novo e recalibrar; o teste de coerência dos limiares acusa a mudança.
 - A busca é só semântica: siglas e termos exatos ("HbA1c" × "hemoglobina glicada") podem falhar. Uma busca híbrida, combinando BM25 com a semântica, ou a expansão de siglas são melhorias possíveis, ainda não implementadas.
 - Não há reranking: o 1º resultado pode estar errado, e a etapa seguinte deve considerar os k trechos e o status.
 - O modelo trunca acima de 512 tokens. O chunking impede que isso aconteça com os protocolos, mas uma pergunta muito longa seria truncada (perguntas ficam limitadas a 1000 caracteres).
