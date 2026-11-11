@@ -109,7 +109,7 @@ Modelo, chunking, significado dos scores, métricas e limitações: [docs/RAG.md
 ## Preparar dados para fine-tuning (sem treinar)
 
 ```powershell
-python scripts/build_sft_dataset.py       # mensagens com contexto RAG + SQLite -> data/processed/sft/train.jsonl
+python scripts/build_sft_dataset.py       # mensagens com contexto RAG + regras + SQLite -> data/processed/sft/train.jsonl
 ```
 
 Formato, uso em treino e inferência, isolamento da avaliação e cobertura das referências:
@@ -126,7 +126,8 @@ Formato, uso em treino e inferência, isolamento da avaliação e cobertura das 
 - [ ] Fine-tuning (LoRA/QLoRA) e comparação base × ajustado
   - [x] Revisão do treino v1 (3 correções) e formato contextualizado das mensagens
     (ver [docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md))
-  - [ ] Decisão sobre cobertura das referências, ampliação controlada e separação treino/validação
+  - [x] Cobertura das referências: política determinística de seções adicionais (20/20 cobertos)
+  - [ ] Ampliação controlada e separação treino/validação
   - [ ] Treino LoRA/QLoRA e comparação
 - [ ] Fluxos LangGraph com validação e auditoria
 - [ ] Interface Streamlit

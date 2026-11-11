@@ -6,6 +6,8 @@
 A mensagem do usuário é montada só a partir do `AssistantContext`. Os scores de similaridade
 não entram no texto: são proximidade vetorial, não probabilidade de acerto, e o modelo não
 deve tratá-los como confiança. A ordem dos trechos e o status da recuperação são mantidos.
+Trechos recuperados ([1], [2]...) e seções por regra ([R1], [R2]...) ficam em blocos
+separados; cada seção por regra informa a regra que a incluiu.
 """
 
 from __future__ import annotations
@@ -15,7 +17,7 @@ import json
 from medprotocol.finetuning.context import AssistantContext
 from medprotocol.rag.retriever import STATUS_NO_RELIABLE, STATUS_OK, STATUS_UNCERTAIN
 
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "2"
 
 SYSTEM_PROMPT = """\
 Você é o MedProtocol AI, assistente educacional de consulta a protocolos SIMULADOS de um \
@@ -29,9 +31,10 @@ conhecimento externo como se fosse regra do protocolo.
 fornecidos. Cite exames e consultas pelos seus IDs.
 3. Nunca invente, estime ou complete valores de exames ou dados do paciente. Dado ausente deve \
 ser informado como ausente.
-4. O status da recuperação indica apenas a proximidade entre a pergunta e os trechos, não que \
-eles estejam corretos. Se nenhum trecho sustenta a resposta, diga que os protocolos fornecidos \
-não cobrem a pergunta.
+4. Há dois tipos de seção: trechos recuperados por similaridade e seções adicionadas por regras \
+determinísticas (pelos dados do paciente ou pelo tipo de pedido). O status da recuperação vale \
+só para os trechos por similaridade e indica proximidade, não correção. Se nenhuma seção \
+fornecida sustenta a resposta, diga que os protocolos fornecidos não cobrem a pergunta.
 5. Trechos parecidos podem tratar de situações diferentes. Confira se a condição descrita no \
 trecho corresponde à situação perguntada; se a informação necessária não estiver registrada, \
 não a presuma e sinalize.
@@ -60,16 +63,28 @@ def render_user_message(context: AssistantContext) -> str:
         "## Pergunta",
         context.pergunta,
         "",
-        f"## Trechos dos protocolos (status da recuperação: {result.status})",
+        f"## Trechos recuperados por similaridade (status da recuperação: {result.status})",
         f"Observação: {STATUS_NOTES[result.status]}",
     ]
     if not result.hits:
         lines.append("Nenhum trecho recuperado.")
     for position, hit in enumerate(result.hits, start=1):
+        header = f"[{position}] {hit.ref} | {hit.protocol_id} v{hit.versao} | {hit.status_protocolo} | {hit.source}"
+        if hit.ref in context.regras_em_recuperados:
+            header += f" | também exigida por regra: {', '.join(context.regras_em_recuperados[hit.ref])}"
+        lines += ["", header, hit.trecho]
+    lines += [
+        "",
+        "## Seções adicionadas por regras determinísticas (independentes da similaridade)",
+    ]
+    if not context.secoes_por_regra:
+        lines.append("Nenhuma seção adicionada por regra.")
+    for position, section in enumerate(context.secoes_por_regra, start=1):
         lines += [
             "",
-            f"[{position}] {hit.ref} | {hit.protocol_id} v{hit.versao} | {hit.status_protocolo} | {hit.source}",
-            hit.trecho,
+            f"[R{position}] {section.ref} | {section.protocol_id} v{section.versao} | {section.status_protocolo} | "
+            f"{section.source} | regra: {', '.join(section.motivos)}",
+            section.trecho,
         ]
     lines.append("")
     if context.paciente is None:

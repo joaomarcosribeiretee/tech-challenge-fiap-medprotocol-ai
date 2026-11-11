@@ -48,10 +48,17 @@ def main(argv: list[str] | None = None) -> int:
         for record in records:
             handle.write(json.dumps(record.to_json(), ensure_ascii=False) + "\n")
 
-    statuses = Counter(r.metadata["status_recuperacao"] for r in records)
+    def summary(key: str) -> str:
+        counts = Counter(r.metadata[key] for r in records)
+        return " · ".join(f"{value}={n}" for value, n in sorted(counts.items()))
+
     gaps = [r.metadata for r in records if r.metadata["refs_citadas_fora_do_contexto"]]
+    added = [len(r.metadata["refs_por_regra"]) for r in records]
     print(f"{len(records)} exemplos -> {args.out.resolve()} (k={args.k})")
-    print("Status da recuperação: " + " · ".join(f"{s}={n}" for s, n in sorted(statuses.items())))
+    print(f"Status original da recuperação: {summary('status_recuperacao')}")
+    print(f"Cobertura das referências citadas: {summary('cobertura')}")
+    print(f"Fundamentação das citadas: {summary('fundamentacao')}")
+    print(f"Seções adicionadas por regra por exemplo: min={min(added)} max={max(added)} total={sum(added)}")
     print(f"Exemplos que citam seções fora do contexto: {len(gaps)}/{len(records)}")
     for meta in gaps:
         print(f"  {meta['qa_id']} ({meta['status_recuperacao']}): {', '.join(meta['refs_citadas_fora_do_contexto'])}")

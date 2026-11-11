@@ -18,7 +18,7 @@ from medprotocol.db.importer import build_database  # noqa: E402
 from medprotocol.db.repository import PatientNotFoundError, connect_readonly  # noqa: E402
 from medprotocol.finetuning.context import build_context, retrieve_excluding  # noqa: E402
 from medprotocol.finetuning.messages import SYSTEM_PROMPT, build_messages, render_user_message  # noqa: E402
-from medprotocol.finetuning.sft import build_sft_record, build_sft_records  # noqa: E402
+from medprotocol.finetuning.sft import build_sft_record, build_sft_records, coverage  # noqa: E402
 from medprotocol.finetuning.sources import (  # noqa: E402
     RESERVED_SECTIONS,
     TRAIN_FILE,
@@ -153,13 +153,22 @@ def test_scores_are_not_shown_to_the_model(retriever):
         assert f"{hit.score:.4f}" not in user and "score" not in user
 
 
-def test_coverage_reports_cited_refs_missing_from_context(examples, retriever, conn):
-    example = next(e for e in examples if e.qa_id == "QA-0005")
-    record = build_sft_record(example, retriever, conn, k=1)
-    cited = example.rotulos["protocolos_citados"]
-    expected = [ref for ref in cited if ref not in record.metadata["refs_recuperadas"]]
-    assert record.metadata["refs_citadas_fora_do_contexto"] == expected
-    assert len(expected) >= len(cited) - 1
+@pytest.mark.parametrize(
+    "cited, retrieved, by_rule, level, basis, missing",
+    [
+        (["A", "B"], ["A"], ["B"], "completa", "similaridade+regras", []),
+        (["A"], ["A"], ["A"], "completa", "regras", []),  # recuperada e também exigida por regra
+        (["A"], ["A"], [], "completa", "similaridade", []),
+        (["A", "B"], ["A"], [], "parcial", "similaridade", ["B"]),
+        (["A"], ["X"], ["Y"], "insuficiente", "nenhuma", ["A"]),
+    ],
+)
+def test_coverage_levels(cited, retrieved, by_rule, level, basis, missing):
+    assert coverage(cited, retrieved, by_rule) == {
+        "cobertura": level,
+        "fundamentacao": basis,
+        "refs_citadas_fora_do_contexto": missing,
+    }
 
 
 # --- Isolamento entre entrada e resposta -------------------------------------------------------

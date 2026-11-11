@@ -8,7 +8,7 @@
 | `build_index.py` | Reconstrói o índice vetorial dos protocolos em `data/vectorstore/` (extra `rag`). |
 | `search_protocols.py "pergunta"` | Mostra os trechos recuperados, referências, scores e status (sem LLM). |
 | `evaluate_retrieval.py` | Hit@1, Hit@3, MRR e calibração de limiares no conjunto de desenvolvimento (nunca no `qa_eval`). |
-| `build_sft_dataset.py` | Gera `data/processed/sft/train.jsonl` (mensagens com contexto RAG + SQLite) a partir de `qa_train.jsonl` e reporta a cobertura das referências; `--strict` falha se houver lacunas. Veja `docs/FINETUNING_DATA.md`. |
+| `build_sft_dataset.py` | Gera `data/processed/sft/train.jsonl` (mensagens com contexto RAG + regras determinísticas + SQLite) a partir de `qa_train.jsonl` e reporta status, cobertura e fundamentação das referências; `--strict` falha se houver lacunas. Veja `docs/FINETUNING_DATA.md`. |
 
 ## Convenções
 

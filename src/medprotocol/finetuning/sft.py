@@ -2,8 +2,9 @@
 
 A resposta esperada é usada só como mensagem do assistente e para o relatório de cobertura,
 nunca para escolher trechos. A cobertura compara as referências citadas no rótulo
-(`protocolos_citados`) com as recuperadas: uma referência citada que não está no contexto
-ensinaria o modelo a citar o que não viu, por isso é reportada (`refs_citadas_fora_do_contexto`).
+(`protocolos_citados`) com as do contexto (recuperadas + por regra): uma referência citada que
+não está no contexto ensinaria o modelo a citar o que não viu, por isso é reportada
+(`refs_citadas_fora_do_contexto`).
 """
 
 from __future__ import annotations
@@ -53,7 +54,7 @@ def build_sft_record(
     _check_input(example, prompt_text, _reserved_texts(retriever) if reserved_texts is None else reserved_texts)
 
     retrieved = [hit.ref for hit in context.recuperacao.hits]
-    cited = example.rotulos.get("protocolos_citados", [])
+    by_rule = [section.ref for section in context.secoes_por_regra] + list(context.regras_em_recuperados)
     return SftRecord(
         messages=messages,
         metadata={
@@ -65,9 +66,38 @@ def build_sft_record(
             "patient_id": example.patient_id,
             "status_recuperacao": context.recuperacao.status,
             "refs_recuperadas": retrieved,
-            "refs_citadas_fora_do_contexto": [ref for ref in cited if ref not in retrieved],
+            "refs_por_regra": {s.ref: list(s.motivos) for s in context.secoes_por_regra},
+            "regras_em_recuperados": {ref: list(m) for ref, m in context.regras_em_recuperados.items()},
+            **coverage(example.rotulos.get("protocolos_citados", []), retrieved, by_rule),
         },
     )
+
+
+def coverage(cited: list[str], retrieved: list[str], by_rule: list[str]) -> dict:
+    """Auditoria (consulta as referências do rótulo DEPOIS que o contexto foi montado).
+
+    `by_rule` = seções exigidas por regra (no bloco de regras ou já recuperadas).
+    cobertura: "completa" (todas as citadas estão no contexto), "parcial" (algumas faltam) ou
+    "insuficiente" (nenhuma citada está no contexto). fundamentacao das citadas presentes:
+    "regras" (todas exigidas por regra), "similaridade" (nenhuma exigida por regra),
+    "similaridade+regras" ou "nenhuma".
+    """
+    present = [ref for ref in cited if ref in retrieved or ref in by_rule]
+    missing = [ref for ref in cited if ref not in present]
+    from_rules = any(ref in by_rule for ref in present)
+    from_search = any(ref not in by_rule for ref in present)
+    if not missing:
+        level = "completa"
+    elif len(missing) < len(cited):
+        level = "parcial"
+    else:
+        level = "insuficiente"
+    sources = [name for name, used in (("similaridade", from_search), ("regras", from_rules)) if used]
+    return {
+        "cobertura": level,
+        "fundamentacao": "+".join(sources) or "nenhuma",
+        "refs_citadas_fora_do_contexto": missing,
+    }
 
 
 def build_sft_records(

@@ -1,8 +1,9 @@
 # Dataset card — MedProtocol AI, dataset sintético v1
 
 > **Status: v1 aprovado como semente após revisão humana assistida** (3 exemplos corrigidos;
-> veja "Revisão do treino"). Ainda não serve para demonstrar melhoria do fine-tuning; a ampliação
-> controlada depende das decisões pendentes em [docs/FINETUNING_DATA.md](../docs/FINETUNING_DATA.md).
+> veja "Revisão do treino"). Ainda não serve para demonstrar melhoria do fine-tuning. Formato
+> contextualizado, cobertura das referências (20/20) e limitações em
+> [docs/FINETUNING_DATA.md](../docs/FINETUNING_DATA.md).
 
 ## Conteúdo
 
