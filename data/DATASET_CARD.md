@@ -1,6 +1,8 @@
 # Dataset card — MedProtocol AI, dataset sintético v1
 
-> **Status: amostra inicial aguardando revisão humana.** Não ampliar antes da revisão de qualidade.
+> **Status: v1 aprovado como semente após revisão humana assistida** (3 exemplos corrigidos;
+> veja "Revisão do treino"). Ainda não serve para demonstrar melhoria do fine-tuning; a ampliação
+> controlada depende das decisões pendentes em [docs/FINETUNING_DATA.md](../docs/FINETUNING_DATA.md).
 
 ## Conteúdo
 
@@ -94,6 +96,19 @@ usam apenas trechos de protocolo que também aparecem no treino. A avaliação m
 sobretudo a **aplicação de regras conhecidas a pacientes inéditos** e o comportamento de
 recusa/encaminhamento. Ela mede pouco a recuperação de regras novas. Isso deve constar no
 relatório de avaliação.
+
+## Revisão do treino (v1)
+
+Os 20 exemplos de `qa_train.jsonl` foram revisados individualmente contra os protocolos e os
+CSVs, sem abrir o `qa_eval.jsonl`. Resultado: 17 aprovados, 3 corrigidos e nenhum bloqueante.
+
+| Exemplo | Problema | Correção |
+|---|---|---|
+| QA-0010 | Concluía que a conduta da S3 foi seguida, mas a S3 vale para paciente "consciente **e capaz de deglutir**", e o registro CON-0006 só informa "consciente" | A resposta diz que as etapas registradas são compatíveis, que a capacidade de deglutir não está registrada e não deve ser presumida, e que a confirmação cabe à equipe médica. Incluída a evidência "Repetir a glicemia capilar após 15 minutos." |
+| QA-0013, QA-0017 | "Vencida desde 16/05/2026": pela regra S4, o exame ainda está em dia **na** data prevista e só vence no dia seguinte | Passou a "próxima verificação prevista para 16/05/2026; vencida na data de referência de 30/06/2026" |
+
+O formato contextualizado para o fine-tuning e a cobertura das referências estão em
+[docs/FINETUNING_DATA.md](../docs/FINETUNING_DATA.md).
 
 ## Limitações
 

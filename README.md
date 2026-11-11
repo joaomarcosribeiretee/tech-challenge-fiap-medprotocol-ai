@@ -77,7 +77,7 @@ Variáveis de ambiente documentadas em [`.env.example`](.env.example) e lidas po
 ```
 AGENTS.md            instruções para agentes de desenvolvimento
 docs/                especificação e documentação técnica
-src/medprotocol/     código do pacote (config, data, db, rag; futuros módulos: finetuning, graph, ui)
+src/medprotocol/     código do pacote (config, data, db, rag, finetuning; futuros módulos: graph, ui)
 tests/               testes pytest
 data/                dados sintéticos (ver data/README.md, SCHEMAS.md e DATASET_CARD.md)
 scripts/             scripts de preparação de dados (ver scripts/README.md)
@@ -106,6 +106,15 @@ python scripts/evaluate_retrieval.py                              # métricas no
 
 Modelo, chunking, significado dos scores, métricas e limitações: [docs/RAG.md](docs/RAG.md).
 
+## Preparar dados para fine-tuning (sem treinar)
+
+```powershell
+python scripts/build_sft_dataset.py       # mensagens com contexto RAG + SQLite -> data/processed/sft/train.jsonl
+```
+
+Formato, uso em treino e inferência, isolamento da avaliação e cobertura das referências:
+[docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md).
+
 ## Roadmap
 
 - [x] **Etapa 0** — Fundação do projeto (estrutura, configuração, testes)
@@ -115,6 +124,10 @@ Modelo, chunking, significado dos scores, métricas e limitações: [docs/RAG.md
 - [x] **Etapa 3** — Recuperação de protocolos com LangChain, sem LLM (revisada; métricas, limitações
   e riscos de segurança em [docs/RAG.md](docs/RAG.md))
 - [ ] Fine-tuning (LoRA/QLoRA) e comparação base × ajustado
+  - [x] Revisão do treino v1 (3 correções) e formato contextualizado das mensagens
+    (ver [docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md))
+  - [ ] Decisão sobre cobertura das referências, ampliação controlada e separação treino/validação
+  - [ ] Treino LoRA/QLoRA e comparação
 - [ ] Fluxos LangGraph com validação e auditoria
 - [ ] Interface Streamlit
 - [ ] Avaliação, relatório técnico e vídeo
