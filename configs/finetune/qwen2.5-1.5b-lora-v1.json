@@ -1,0 +1,27 @@
+{
+  "run_name": "qwen2.5-1.5b-lora-v1",
+  "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "base_model_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "sft_file": "data/processed/sft/train.jsonl",
+  "split_file": "data/finetune/split_v1.json",
+  "output_dir": "models/adapters",
+  "report_dir": "reports/finetune",
+  "seed": 42,
+  "max_length": 6144,
+  "epochs": 3,
+  "learning_rate": 0.0002,
+  "batch_size": 1,
+  "grad_accum": 8,
+  "warmup_ratio": 0.1,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "dtype": "bfloat16",
+  "gradient_checkpointing": true,
+  "max_new_tokens": 512,
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  }
+}

@@ -17,7 +17,9 @@ import json
 from medprotocol.finetuning.context import AssistantContext
 from medprotocol.rag.retriever import STATUS_NO_RELIABLE, STATUS_OK, STATUS_UNCERTAIN
 
-PROMPT_VERSION = "2"
+# "3": o JSON do paciente passou a incluir `historico_exames` (Etapa 4). O texto do sistema é o
+# mesmo da versão "2"; a seleção de seções (política v1) não mudou.
+PROMPT_VERSION = "3"
 
 SYSTEM_PROMPT = """\
 Você é o MedProtocol AI, assistente educacional de consulta a protocolos SIMULADOS de um \

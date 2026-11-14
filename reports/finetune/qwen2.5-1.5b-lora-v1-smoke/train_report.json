@@ -1,0 +1,94 @@
+{
+  "run_name": "qwen2.5-1.5b-lora-v1-smoke",
+  "data_utc": "2026-11-14T22:14:04+00:00",
+  "config": {
+    "run_name": "qwen2.5-1.5b-lora-v1",
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_model_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "sft_file": "data/processed/sft/train.jsonl",
+    "split_file": "data/finetune/split_v1.json",
+    "output_dir": "models/adapters",
+    "report_dir": "reports/finetune",
+    "seed": 42,
+    "max_length": 6144,
+    "epochs": 3,
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "grad_accum": 8,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.0,
+    "max_grad_norm": 1.0,
+    "dtype": "bfloat16",
+    "gradient_checkpointing": true,
+    "max_new_tokens": 512,
+    "lora": {
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    }
+  },
+  "smoke": true,
+  "ambiente": {
+    "python": "3.14.4",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "transformers": "5.21.1",
+    "peft": "0.21.3",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "vram_total_gb": 12.88
+  },
+  "dados": {
+    "exemplos_treino": 4,
+    "exemplos_validacao": 2,
+    "tokens_min": 1151,
+    "tokens_max": 4602,
+    "tokens_resposta_treino": 921
+  },
+  "parametros": {
+    "treinaveis": 18464768,
+    "total": 1562179072,
+    "percentual": 1.182
+  },
+  "perda_validacao_antes": 1.1718,
+  "epocas": [
+    {
+      "epoca": 1,
+      "perda_validacao": 1.1201,
+      "passos": 1
+    },
+    {
+      "epoca": 2,
+      "perda_validacao": 1.0525,
+      "passos": 2
+    }
+  ],
+  "melhor_epoca": 2,
+  "passos": [
+    {
+      "passo": 1,
+      "epoca": 1,
+      "perda_treino": 1.2233,
+      "norma_gradiente": 0.4871,
+      "lr": 0.0002
+    },
+    {
+      "passo": 2,
+      "epoca": 2,
+      "perda_treino": 1.0608,
+      "norma_gradiente": 0.361,
+      "lr": 0.0
+    }
+  ],
+  "segundos_treino": 19.5,
+  "pico_memoria_gpu_gb": 4.91,
+  "adaptador": "models\\adapters\\qwen2.5-1.5b-lora-v1-smoke"
+}

@@ -9,6 +9,7 @@ não está no contexto ensinaria o modelo a citar o que não viu, por isso é re
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from dataclasses import dataclass
 
@@ -18,6 +19,9 @@ from medprotocol.finetuning.context_policy import POLICY_VERSION
 from medprotocol.finetuning.messages import PROMPT_VERSION, build_messages
 from medprotocol.finetuning.sources import RESERVED_SECTIONS, ReservedDataError, TrainingExample
 from medprotocol.rag.retriever import DEFAULT_K, ProtocolRetriever
+
+
+RECORD_ID_RE = re.compile(r"\b(?:EX|CON|PAC)-\d{4}\b")
 
 
 @dataclass(frozen=True)
@@ -71,8 +75,17 @@ def build_sft_record(
             "refs_por_regra": {s.ref: list(s.motivos) for s in context.secoes_por_regra},
             "regras_em_recuperados": {ref: list(m) for ref, m in context.regras_em_recuperados.items()},
             **coverage(example.rotulos.get("protocolos_citados", []), retrieved, by_rule),
+            "ids_citados_fora_do_contexto": ids_outside_input(example.resposta_esperada, prompt_text),
         },
     )
+
+
+def ids_outside_input(answer: str, prompt_text: str) -> list[str]:
+    """IDs de exame, consulta ou paciente citados na resposta que não aparecem na entrada.
+
+    Uma resposta de treino que cita um registro ausente da entrada ensina o modelo a inventar.
+    """
+    return sorted(set(RECORD_ID_RE.findall(answer)) - set(RECORD_ID_RE.findall(prompt_text)))
 
 
 def coverage(cited: list[str], retrieved: list[str], by_rule: list[str]) -> dict:

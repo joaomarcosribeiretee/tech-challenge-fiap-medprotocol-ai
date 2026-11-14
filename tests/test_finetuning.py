@@ -18,7 +18,7 @@ from medprotocol.db.importer import build_database  # noqa: E402
 from medprotocol.db.repository import PatientNotFoundError, connect_readonly  # noqa: E402
 from medprotocol.finetuning.context import build_context, retrieve_excluding  # noqa: E402
 from medprotocol.finetuning.messages import SYSTEM_PROMPT, build_messages, render_user_message  # noqa: E402
-from medprotocol.finetuning.sft import build_sft_record, build_sft_records, coverage  # noqa: E402
+from medprotocol.finetuning.sft import build_sft_record, build_sft_records, coverage, ids_outside_input  # noqa: E402
 from medprotocol.finetuning.sources import (  # noqa: E402
     RESERVED_SECTIONS,
     TRAIN_FILE,
@@ -259,3 +259,12 @@ def test_unknown_patient_raises(retriever, conn):
 def test_patient_question_without_database_raises(retriever):
     with pytest.raises(ValueError, match="banco"):
         build_context("Exames de PAC-0001?", retriever, None, "PAC-0001")
+
+
+def test_no_training_answer_cites_records_absent_from_its_input(records):
+    """Toda prova citada (exame, consulta, paciente) precisa estar na entrada do exemplo."""
+    assert [r.metadata["qa_id"] for r in records if r.metadata["ids_citados_fora_do_contexto"]] == []
+
+
+def test_ids_outside_input_detects_unseen_exam():
+    assert ids_outside_input("Veja EX-0023 e EX-0020.", '{"exam_id": "EX-0020"}') == ["EX-0023"]

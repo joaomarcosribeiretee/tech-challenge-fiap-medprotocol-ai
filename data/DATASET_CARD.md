@@ -213,6 +213,14 @@ reservada e nenhum paciente reservado.
   (intervalo indeterminável) são diferentes.
 - Concentração de pacientes no piloto: PAC-0013 e PAC-0014 aparecem em 4 exemplos cada.
 
+## Separação treino/validação (Etapa 4)
+
+Os 61 exemplos de `qa_train.jsonl` foram divididos em **48 de treino e 13 de validação**
+(`finetune/split_v1.json`). Nenhum paciente aparece nos dois lados; a validação tem PAC-0002,
+PAC-0003, PAC-0011 e um exemplo sem paciente por categoria. Nenhum par entre os lados passa de
+0,562 de similaridade. A validação é interna ao treino; o `qa_eval.jsonl` continua reservado à
+avaliação final. Detalhes em [docs/FINETUNING.md](../docs/FINETUNING.md).
+
 ## Limitações
 
 - **Volume:** 61 casos de treino e 10 de avaliação ainda são pouco para o fine-tuning final; servem para validar formato, qualidade e cobertura.

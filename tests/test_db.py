@@ -240,3 +240,12 @@ def test_summary_flags_exam_after_reference_date(conn):
     summary = get_patient_summary(conn, "PAC-0003", reference_date=date(2026, 1, 1))
     assert any("EX-0014" in issue for issue in summary["inconsistencias"])
     assert {v["exame"]: v["status"] for v in summary["verificacoes"]}["HBA1C"] == "ausente"
+    assert "EX-0014" not in [e["exam_id"] for e in summary["historico_exames"]]
+
+
+def test_summary_includes_full_exam_history_up_to_reference_date(conn):
+    """Resultados anteriores (ex.: TFG de 2025 de PAC-0004) precisam estar no contexto."""
+    history = get_patient_summary(conn, "PAC-0004")["historico_exames"]
+    ids = [e["exam_id"] for e in history]
+    assert "EX-0023" in ids and "EX-0020" in ids
+    assert [e["data_coleta"] for e in history] == sorted(e["data_coleta"] for e in history)

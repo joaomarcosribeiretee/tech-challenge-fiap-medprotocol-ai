@@ -62,7 +62,11 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Exemplos que citam seções fora do contexto: {len(gaps)}/{len(records)}")
     for meta in gaps:
         print(f"  {meta['qa_id']} ({meta['status_recuperacao']}): {', '.join(meta['refs_citadas_fora_do_contexto'])}")
-    return 1 if args.strict and gaps else 0
+    id_gaps = [r.metadata for r in records if r.metadata["ids_citados_fora_do_contexto"]]
+    print(f"Exemplos que citam exames/consultas fora da entrada: {len(id_gaps)}/{len(records)}")
+    for meta in id_gaps:
+        print(f"  {meta['qa_id']}: {', '.join(meta['ids_citados_fora_do_contexto'])}")
+    return 1 if args.strict and (gaps or id_gaps) else 0
 
 
 if __name__ == "__main__":

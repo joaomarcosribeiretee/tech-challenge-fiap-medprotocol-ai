@@ -1,0 +1,104 @@
+{
+  "run_name": "qwen2.5-1.5b-lora-v1",
+  "split": "val",
+  "n": 13,
+  "decodificacao": {
+    "do_sample": false,
+    "max_new_tokens": 512
+  },
+  "perda_respostas_referencia": {
+    "base": 1.2989,
+    "ajustado": 0.8816
+  },
+  "respostas_cortadas": {
+    "base": 1,
+    "ajustado": 0
+  },
+  "metricas": {
+    "base": {
+      "n": 13,
+      "respostas_com_ref_fora_do_contexto": 0,
+      "respostas_com_id_inventado": 0,
+      "respostas_com_dose_inventada": 0,
+      "respostas_com_data_fora_da_entrada": 1,
+      "respostas_sem_secao_citada": 13,
+      "recusa_quando_devida": {
+        "ok": 1,
+        "n": 2,
+        "taxa": 0.5
+      },
+      "recusa_indevida": 3,
+      "encaminhamento_quando_devido": {
+        "ok": 1,
+        "n": 4,
+        "taxa": 0.25
+      },
+      "insuficiencia_declarada": {
+        "ok": 0,
+        "n": 2,
+        "taxa": 0.0
+      },
+      "respostas_com_protocolo_fora_do_contexto": 0,
+      "recall_medio_refs_esperadas": 0.0,
+      "recall_medio_protocolos_esperados": 0.083,
+      "vazias": 0
+    },
+    "ajustado": {
+      "n": 13,
+      "respostas_com_ref_fora_do_contexto": 0,
+      "respostas_com_id_inventado": 0,
+      "respostas_com_dose_inventada": 0,
+      "respostas_com_data_fora_da_entrada": 2,
+      "respostas_sem_secao_citada": 13,
+      "recusa_quando_devida": {
+        "ok": 2,
+        "n": 2,
+        "taxa": 1.0
+      },
+      "recusa_indevida": 0,
+      "encaminhamento_quando_devido": {
+        "ok": 2,
+        "n": 4,
+        "taxa": 0.5
+      },
+      "insuficiencia_declarada": {
+        "ok": 1,
+        "n": 2,
+        "taxa": 0.5
+      },
+      "respostas_com_protocolo_fora_do_contexto": 0,
+      "recall_medio_refs_esperadas": 0.0,
+      "recall_medio_protocolos_esperados": 0.278,
+      "vazias": 0
+    },
+    "referencia": {
+      "n": 13,
+      "respostas_com_ref_fora_do_contexto": 0,
+      "respostas_com_id_inventado": 0,
+      "respostas_com_dose_inventada": 0,
+      "respostas_com_data_fora_da_entrada": 0,
+      "respostas_sem_secao_citada": 7,
+      "recusa_quando_devida": {
+        "ok": 2,
+        "n": 2,
+        "taxa": 1.0
+      },
+      "recusa_indevida": 0,
+      "encaminhamento_quando_devido": {
+        "ok": 4,
+        "n": 4,
+        "taxa": 1.0
+      },
+      "insuficiencia_declarada": {
+        "ok": 2,
+        "n": 2,
+        "taxa": 1.0
+      },
+      "respostas_com_protocolo_fora_do_contexto": 0,
+      "recall_medio_refs_esperadas": 0.396,
+      "recall_medio_protocolos_esperados": 0.75,
+      "vazias": 0
+    }
+  },
+  "aviso": "Heurísticas automáticas e perda não são avaliação clínica; leia as respostas em generations_*.jsonl."
+}

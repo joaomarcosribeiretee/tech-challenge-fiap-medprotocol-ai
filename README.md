@@ -36,7 +36,7 @@ Interface → LangGraph → LangChain/RAG + SQLite → LLM ajustada → Validaç
 | Testes | pytest | 0 |
 | Dados estruturados | SQLite | Dados sintéticos |
 | Recuperação | LangChain (`InMemoryVectorStore`) + `multilingual-e5-small` local | 3 |
-| Fine-tuning | Transformers, PEFT, LoRA/QLoRA | Fine-tuning |
+| Fine-tuning | Transformers, PEFT (LoRA bf16), PyTorch CUDA; Qwen2.5-1.5B-Instruct | 4 |
 | Orquestração | LangGraph | Fluxos |
 | Interface | Streamlit | Interface |
 
@@ -64,8 +64,8 @@ cp .env.example .env
 python -m pytest
 ```
 
-> Nota: o fine-tuning (PyTorch, bitsandbytes) pode exigir uma versão específica de Python
-> (ex.: 3.11/3.12) ou execução em GPU (ex.: Google Colab). Isso será definido na etapa de fine-tuning.
+> Nota: o fine-tuning usa um segundo ambiente (`.venv-train`) com PyTorch CUDA; ver a seção
+> "Fine-tuning LoRA" abaixo. Não foi preciso Python 3.11/3.12: há rodas CUDA para 3.14.
 
 ## Configuração
 
@@ -115,6 +115,26 @@ python scripts/build_sft_dataset.py       # mensagens com contexto RAG + regras 
 Formato, uso em treino e inferência, isolamento da avaliação e cobertura das referências:
 [docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md).
 
+## Fine-tuning LoRA e comparação base × ajustado
+
+Usa um ambiente **separado** (`.venv-train`), com torch CUDA, para não alterar o ambiente do RAG.
+Requer GPU NVIDIA (testado numa RTX 4070 de 12 GB) e baixa ~3,1 GB de pesos do Qwen2.5-1.5B-Instruct
+(Apache-2.0) no primeiro uso.
+
+```powershell
+python scripts/split_sft_dataset.py               # (.venv) manifesto treino/validação, determinístico
+py -3.14 -m venv .venv-train
+.venv-train\Scripts\python -m pip install torch==2.14.1+cu130 --index-url https://download.pytorch.org/whl/cu130
+.venv-train\Scripts\python -m pip install -e ".[dev,train]" -c constraints-train.txt
+.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json --smoke
+.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
+.venv-train\Scripts\python scripts/compare_models.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
+```
+
+O adaptador fica em `models/adapters/` (não versionado). Os relatórios de treino e comparação
+ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e limitações:
+[docs/FINETUNING.md](docs/FINETUNING.md).
+
 ## Roadmap
 
 - [x] **Etapa 0** — Fundação do projeto (estrutura, configuração, testes)
@@ -132,8 +152,11 @@ Formato, uso em treino e inferência, isolamento da avaliação e cobertura das 
     no pré-registro: 36 completas, 4 parciais, 1 insuficiente; 41/41 após correção das respostas
     e substituição de 6 exemplos (não é medida independente da política). Revisão técnica,
     **sem revisão clínica** (ver [data/DATASET_CARD.md](data/DATASET_CARD.md))
-  - [ ] Separação treino/validação (por paciente, estratificada por categoria)
-  - [ ] Treino LoRA/QLoRA e comparação
+  - [x] Separação treino/validação: 48/13, sem paciente nos dois lados (`data/finetune/split_v1.json`)
+  - [x] Treino LoRA real (Qwen2.5-1.5B-Instruct, RTX 4070, 3,6 min) e comparação base × ajustado
+    na validação. A perda caiu de 1,30 para 0,88; o ajustado aprendeu formato, recusa e
+    encaminhamento, mas **não ficou mais correto** na leitura das respostas (ver [docs/FINETUNING.md](docs/FINETUNING.md))
+  - [ ] Iteração de dados/treino com base nos erros observados e avaliação final no `qa_eval`
 - [ ] Fluxos LangGraph com validação e auditoria
 - [ ] Interface Streamlit
 - [ ] Avaliação, relatório técnico e vídeo

@@ -1,0 +1,211 @@
+{
+  "run_name": "qwen2.5-1.5b-lora-v1",
+  "data_utc": "2026-11-14T22:18:01+00:00",
+  "config": {
+    "run_name": "qwen2.5-1.5b-lora-v1",
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_model_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "sft_file": "data/processed/sft/train.jsonl",
+    "split_file": "data/finetune/split_v1.json",
+    "output_dir": "models/adapters",
+    "report_dir": "reports/finetune",
+    "seed": 42,
+    "max_length": 6144,
+    "epochs": 3,
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "grad_accum": 8,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.0,
+    "max_grad_norm": 1.0,
+    "dtype": "bfloat16",
+    "gradient_checkpointing": true,
+    "max_new_tokens": 512,
+    "lora": {
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    }
+  },
+  "smoke": false,
+  "ambiente": {
+    "python": "3.14.4",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "transformers": "5.21.1",
+    "peft": "0.21.3",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "vram_total_gb": 12.88
+  },
+  "dados": {
+    "exemplos_treino": 48,
+    "exemplos_validacao": 13,
+    "tokens_min": 1151,
+    "tokens_max": 4602,
+    "tokens_resposta_treino": 7376
+  },
+  "parametros": {
+    "treinaveis": 18464768,
+    "total": 1562179072,
+    "percentual": 1.182
+  },
+  "perda_validacao_antes": 1.2989,
+  "epocas": [
+    {
+      "epoca": 1,
+      "perda_validacao": 0.9768,
+      "passos": 6
+    },
+    {
+      "epoca": 2,
+      "perda_validacao": 0.9007,
+      "passos": 12
+    },
+    {
+      "epoca": 3,
+      "perda_validacao": 0.8816,
+      "passos": 18
+    }
+  ],
+  "melhor_epoca": 3,
+  "passos": [
+    {
+      "passo": 1,
+      "epoca": 1,
+      "perda_treino": 1.3826,
+      "norma_gradiente": 1.0244,
+      "lr": 0.0002
+    },
+    {
+      "passo": 2,
+      "epoca": 1,
+      "perda_treino": 1.2201,
+      "norma_gradiente": 0.843,
+      "lr": 0.00018823529411764707
+    },
+    {
+      "passo": 3,
+      "epoca": 1,
+      "perda_treino": 1.1955,
+      "norma_gradiente": 0.7594,
+      "lr": 0.00017647058823529413
+    },
+    {
+      "passo": 4,
+      "epoca": 1,
+      "perda_treino": 1.0043,
+      "norma_gradiente": 0.951,
+      "lr": 0.0001647058823529412
+    },
+    {
+      "passo": 5,
+      "epoca": 1,
+      "perda_treino": 1.0964,
+      "norma_gradiente": 0.7319,
+      "lr": 0.00015294117647058822
+    },
+    {
+      "passo": 6,
+      "epoca": 1,
+      "perda_treino": 0.9598,
+      "norma_gradiente": 0.6735,
+      "lr": 0.0001411764705882353
+    },
+    {
+      "passo": 7,
+      "epoca": 2,
+      "perda_treino": 0.8316,
+      "norma_gradiente": 0.6774,
+      "lr": 0.00012941176470588237
+    },
+    {
+      "passo": 8,
+      "epoca": 2,
+      "perda_treino": 0.8401,
+      "norma_gradiente": 0.7287,
+      "lr": 0.00011764705882352942
+    },
+    {
+      "passo": 9,
+      "epoca": 2,
+      "perda_treino": 0.8264,
+      "norma_gradiente": 0.6707,
+      "lr": 0.00010588235294117647
+    },
+    {
+      "passo": 10,
+      "epoca": 2,
+      "perda_treino": 0.8108,
+      "norma_gradiente": 0.6391,
+      "lr": 9.411764705882353e-05
+    },
+    {
+      "passo": 11,
+      "epoca": 2,
+      "perda_treino": 0.8608,
+      "norma_gradiente": 0.7454,
+      "lr": 8.23529411764706e-05
+    },
+    {
+      "passo": 12,
+      "epoca": 2,
+      "perda_treino": 0.7302,
+      "norma_gradiente": 0.6571,
+      "lr": 7.058823529411765e-05
+    },
+    {
+      "passo": 13,
+      "epoca": 3,
+      "perda_treino": 0.6465,
+      "norma_gradiente": 0.5939,
+      "lr": 5.882352941176471e-05
+    },
+    {
+      "passo": 14,
+      "epoca": 3,
+      "perda_treino": 0.7663,
+      "norma_gradiente": 0.7711,
+      "lr": 4.705882352941177e-05
+    },
+    {
+      "passo": 15,
+      "epoca": 3,
+      "perda_treino": 0.6319,
+      "norma_gradiente": 0.6463,
+      "lr": 3.529411764705883e-05
+    },
+    {
+      "passo": 16,
+      "epoca": 3,
+      "perda_treino": 0.7208,
+      "norma_gradiente": 0.7111,
+      "lr": 2.3529411764705884e-05
+    },
+    {
+      "passo": 17,
+      "epoca": 3,
+      "perda_treino": 0.6412,
+      "norma_gradiente": 0.6781,
+      "lr": 1.1764705882352942e-05
+    },
+    {
+      "passo": 18,
+      "epoca": 3,
+      "perda_treino": 0.6637,
+      "norma_gradiente": 0.65,
+      "lr": 0.0
+    }
+  ],
+  "segundos_treino": 214.4,
+  "pico_memoria_gpu_gb": 4.91,
+  "adaptador": "models\\adapters\\qwen2.5-1.5b-lora-v1"
+}

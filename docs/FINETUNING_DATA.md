@@ -9,7 +9,15 @@ contexto que o sistema terá na inferência**:
 O objetivo é treinar o modelo a **ler** o contexto e citar o que está nele, e não a decorar
 valores de pacientes.
 
-Esta etapa não treina nenhum modelo: só prepara e verifica o formato.
+Esta etapa não treina nenhum modelo: só prepara e verifica o formato. O treino, o split
+treino/validação e a comparação estão em [FINETUNING.md](FINETUNING.md).
+
+> **Prompt v3 (Etapa 4).** O JSON do paciente passou a incluir `historico_exames`, porque 10
+> respostas de referência citavam exames anteriores que não estavam na entrada. O texto do
+> sistema e a política de seções (v1) não mudaram. Os pré-registros do piloto foram gravados
+> com `prompt_version` "2", mas a seleção de seções continua idêntica (0 divergências). O
+> `--strict` agora também falha se a resposta citar exame, consulta ou paciente ausente da
+> entrada (`ids_citados_fora_do_contexto` nos metadados).
 
 ## Gerar
 
@@ -26,7 +34,7 @@ Cada linha do arquivo gerado tem duas partes:
 
 ```json
 {"messages": [{"role": "system", ...}, {"role": "user", ...}, {"role": "assistant", ...}],
- "metadata": {"qa_id": "QA-0014", "categoria": "recusa", "prompt_version": "2", "k": 4,
+ "metadata": {"qa_id": "QA-0014", "categoria": "recusa", "prompt_version": "3", "policy_version": "1", "k": 4,
               "data_referencia": "2026-06-30", "patient_id": "PAC-0003",
               "status_recuperacao": "incerto",
               "refs_recuperadas": ["PROT-DM2-003#S3", "..."],

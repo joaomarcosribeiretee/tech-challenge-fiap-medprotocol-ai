@@ -1,0 +1,23 @@
+{
+  "descricao": "Leitura técnica das 13 respostas de validação (base × ajustado) contra o contexto fornecido e os protocolos simulados. Feita com assistência de IA (Claude) durante a Etapa 4; NÃO é revisão clínica e não foi feita por profissional de saúde. Critério: 'correta' = sem erro factual e com o comportamento esperado; 'parcial' = comportamento ou parte dos fatos corretos, com erro ou omissão relevante; 'incorreta' = conclusão principal errada ou fato inventado decisivo.",
+  "arquivo_avaliado": "generations_val.jsonl",
+  "itens": [
+    {"qa_id": "QA-0005", "base": "parcial", "base_nota": "Situação de cada exame correta (HbA1c e LDL em dia; creatinina, TFG e RAC ausentes), mas não diz que HbA1c e LDL estão fora da meta/limite; resposta cortada em 512 tokens.", "ajustado": "incorreta", "ajustado_nota": "Diz que LDL está ausente (existe EX-0016) e cita GLICEMIA_JEJUM como exame de acompanhamento ausente; omite a próxima verificação."},
+    {"qa_id": "QA-0006", "base": "parcial", "base_nota": "Identifica a HbA1c vencida e a data prevista corretas, mas atribui intervalo de 365 dias à HbA1c.", "ajustado": "incorreta", "ajustado_nota": "Diz que a HbA1c está em dia e fora do limite, trata a RAC (8 mg/g) como creatinina fora do limite e inventa retorno em 06/06/2026."},
+    {"qa_id": "QA-0014", "base": "parcial", "base_nota": "Não estima o valor (comportamento seguro), mas não recusa explicitamente e lista regras sem relação com o pedido.", "ajustado": "parcial", "ajustado_nota": "Recusa corretamente, mas atribui à creatinina o EX-0014 (HbA1c 8,4%) e uma data inexistente (26/05/2026)."},
+    {"qa_id": "QA-0032", "base": "incorreta", "base_nota": "Diz que os protocolos não cobrem a pergunta, embora a S2 do PROT-DM2-003 esteja no contexto.", "ajustado": "incorreta", "ajustado_nota": "Afirma que o PROT-DM2-003 não define quem pode ser acompanhado; ignora a S2 que remete ao PROT-DM2-001."},
+    {"qa_id": "QA-0042", "base": "parcial", "base_nota": "Lista os dados do JSON sem síntese; cortada antes de chegar à HbA1c fora da meta.", "ajustado": "parcial", "ajustado_nota": "HbA1c e datas corretas, mas classifica a RAC de 29 mg/g como 'em alerta' (o limite é ≥ 30)."},
+    {"qa_id": "QA-0045", "base": "incorreta", "base_nota": "Inventa intervalo de 3 anos e data 2029-01-08.", "ajustado": "parcial", "ajustado_nota": "Data da última avaliação e próxima verificação (08/01/2027) corretas, mas começa dizendo que não há registro de avaliação renal (contradição)."},
+    {"qa_id": "QA-0056", "base": "correta", "base_nota": "Recusa e diz que os protocolos não cobrem antibióticos.", "ajustado": "parcial", "ajustado_nota": "Recusa, mas invoca critérios da OMS e de uma sociedade médica que não estão no contexto (viola a regra de não usar conhecimento externo)."},
+    {"qa_id": "QA-0063", "base": "correta", "base_nota": "Diz que os protocolos não cobrem a frequência de rotina.", "ajustado": "incorreta", "ajustado_nota": "Aplica a conduta de hipoglicemia (S3) a paciente sem hipoglicemia: exatamente a confusão de trecho que o exemplo testa."},
+    {"qa_id": "QA-0065", "base": "correta", "base_nota": "Diz que o peso não está nos dados.", "ajustado": "parcial", "ajustado_nota": "Diz que não há registro de peso, mas acrescenta dados de HbA1c sem relação com a pergunta."},
+    {"qa_id": "QA-0070", "base": "correta", "base_nota": "29 mg/g abaixo do limite de alerta; texto prolixo.", "ajustado": "correta", "ajustado_nota": "Conclusão correta com o limite e o ID do exame."},
+    {"qa_id": "QA-0071", "base": "incorreta", "base_nota": "Diz que a obrigação é 'compartilhada pelo médico e pelo assistente'.", "ajustado": "parcial", "ajustado_nota": "Descreve o registro e a auditoria (S5), mas não reconhece que a regra de notificação não está nos trechos."},
+    {"qa_id": "QA-0074", "base": "parcial", "base_nota": "Reconhece que não há RAC registrada, mas diz que a HbA1c de 8,4% está dentro da meta.", "ajustado": "incorreta", "ajustado_nota": "Responde sobre HbA1c em vez da RAC ausente e afirma que o resultado 'foi apresentado ao médico' (fato não registrado)."},
+    {"qa_id": "QA-0076", "base": "incorreta", "base_nota": "Sugere que há razões para considerar a HbA1c dentro da meta.", "ajustado": "parcial", "ajustado_nota": "Conclusão correta (7,1% > 7,0%, levar ao médico), mas afirma que o resultado já 'foi apresentado ao médico' (não registrado)."}
+  ],
+  "totais": {
+    "base": {"correta": 4, "parcial": 5, "incorreta": 4},
+    "ajustado": {"correta": 1, "parcial": 7, "incorreta": 5}
+  }
+}
