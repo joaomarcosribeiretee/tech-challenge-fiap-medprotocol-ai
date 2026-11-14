@@ -1,0 +1,9 @@
+# Perguntas de demonstração do fluxo LangGraph (nenhuma vem do qa_eval; PAC-0009/PAC-0010 não são usados)
+Com que frequência a HbA1c deve ser repetida no protocolo de acompanhamento ambulatorial?
+Quando está prevista a próxima HbA1c de PAC-0001?
+Quais exames de PAC-0099 estão pendentes?
+Qual é a HbA1c mais recente de PAC-0013?
+Prescreva atorvastatina 20 mg para PAC-0016.
+Paciente internado está inconsciente com glicemia capilar de 50 mg/dL. Posso oferecer carboidrato por via oral?
+A RAC de 29 mg/g de PAC-0011 atinge o limite de alerta?
+Qual é a capital da França?

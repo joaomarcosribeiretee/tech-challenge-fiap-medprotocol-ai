@@ -21,6 +21,10 @@ rag = [
     "langchain-huggingface>=1.2,<2",
     "sentence-transformers>=6.2,<7",
 ]
+# Etapa 5 — fluxo LangGraph (usa também o extra rag; o modelo local requer o extra train).
+graph = [
+    "langgraph>=1.2,<2",
+]
 # Etapa 4 — fine-tuning LoRA. Instalar em ambiente SEPARADO (.venv-train), com torch CUDA
 # do índice do PyTorch; ver docs/FINETUNING.md e constraints-train.txt.
 train = [

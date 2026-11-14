@@ -22,7 +22,9 @@ validação humana e registrar eventos de auditoria.
 Fora do escopo: hospitais ou prontuários reais, uso clínico, prescrição automatizada, app mobile,
 infraestrutura complexa de produção.
 
-## Arquitetura prevista
+## Arquitetura
+
+Detalhes do grafo, validação e status: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```
 Interface → LangGraph → LangChain/RAG + SQLite → LLM ajustada → Validação → Resposta com fontes e logs
@@ -37,7 +39,7 @@ Interface → LangGraph → LangChain/RAG + SQLite → LLM ajustada → Validaç
 | Dados estruturados | SQLite | Dados sintéticos |
 | Recuperação | LangChain (`InMemoryVectorStore`) + `multilingual-e5-small` local | 3 |
 | Fine-tuning | Transformers, PEFT (LoRA bf16), PyTorch CUDA; Qwen2.5-1.5B-Instruct | 4 |
-| Orquestração | LangGraph | Fluxos |
+| Orquestração | LangGraph (estado explícito, validação determinística, auditoria) | 5 |
 | Interface | Streamlit | Interface |
 
 As bibliotecas são adicionadas ao `pyproject.toml` somente na etapa que as utiliza, com versão documentada.
@@ -77,7 +79,7 @@ Variáveis de ambiente documentadas em [`.env.example`](.env.example) e lidas po
 ```
 AGENTS.md            instruções para agentes de desenvolvimento
 docs/                especificação e documentação técnica
-src/medprotocol/     código do pacote (config, data, db, rag, finetuning; futuros módulos: graph, ui)
+src/medprotocol/     código do pacote (config, data, db, rag, finetuning, graph; futuro: ui)
 tests/               testes pytest
 data/                dados sintéticos (ver data/README.md, SCHEMAS.md e DATASET_CARD.md)
 scripts/             scripts de preparação de dados (ver scripts/README.md)
@@ -131,6 +133,22 @@ py -3.14 -m venv .venv-train
 .venv-train\Scripts\python scripts/compare_models.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
 ```
 
+## Perguntar ao assistente (fluxo LangGraph)
+
+Executa no `.venv-train`, que tem RAG, LangGraph, torch CUDA e PEFT. A recuperação nesse
+ambiente é idêntica à do `.venv`; ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+```powershell
+.venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph]" -c constraints-train.txt
+.venv-train\Scripts\python scripts/ask.py "Quando está prevista a próxima HbA1c de PAC-0001?"
+.venv-train\Scripts\python scripts/ask.py --variant base "..."            # modelo-base (adaptador desligado)
+.venv-train\Scripts\python scripts/ask.py --file scripts/demo/perguntas.txt --out reports/graph/demo_ajustado.jsonl
+```
+
+A saída é JSON com `status` (`respondido`, `evidencia_insuficiente`, `revisao_humana` ou
+`erro`), `resposta`, `fontes`, `alertas` e `audit_id`. A auditoria vai para `logs/audit.jsonl`,
+sem o texto da pergunta nem o da resposta. **Passar nas verificações não significa segurança clínica.**
+
 O adaptador fica em `models/adapters/` (não versionado). Os relatórios de treino e comparação
 ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e limitações:
 [docs/FINETUNING.md](docs/FINETUNING.md).
@@ -157,6 +175,9 @@ ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e 
     na validação. A perda caiu de 1,30 para 0,88; o ajustado aprendeu formato, recusa e
     encaminhamento, mas **não ficou mais correto** na leitura das respostas (ver [docs/FINETUNING.md](docs/FINETUNING.md))
   - [ ] Iteração de dados/treino com base nos erros observados e avaliação final no `qa_eval`
-- [ ] Fluxos LangGraph com validação e auditoria
+- [x] **Etapa 5** — Fluxo LangGraph: paciente (SQLite) → protocolos (RAG) → política v1 → Qwen2.5 + LoRA →
+  validação determinística → auditoria, com saída estruturada (status, fontes, alertas, ID de auditoria).
+  Testado com LLM simulado (25 testes) e com o modelo real em 8 perguntas. As regras retêm ou
+  encaminham a maioria dos erros, mas **não todos** (ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md))
 - [ ] Interface Streamlit
 - [ ] Avaliação, relatório técnico e vídeo

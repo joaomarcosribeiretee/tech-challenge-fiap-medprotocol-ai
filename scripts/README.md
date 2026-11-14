@@ -12,6 +12,8 @@
 | `split_sft_dataset.py` | Gera `data/finetune/split_v1.json` (IDs de treino/validação), sem paciente nos dois lados e sem quase-duplicatas entre os lados. Determinístico. |
 | `train_lora.py --config ... [--smoke]` | Treina o adaptador LoRA (ambiente `.venv-train`, GPU). Grava o adaptador em `models/adapters/` (não versionado) e o relatório em `reports/finetune/`. Veja `docs/FINETUNING.md`. |
 | `compare_models.py --config ... [--rescore]` | Gera respostas do modelo base e do ajustado com o mesmo contexto na validação, calcula as métricas heurísticas e a perda. `--rescore` recalcula sem GPU. |
+| `ask.py "pergunta" [--variant base] [--file f.txt --out f.jsonl]` | Executa o fluxo LangGraph completo (`.venv-train`) e imprime a saída estruturada. Veja `docs/ARCHITECTURE.md`. |
+| `validate_generations.py` | Aplica a validação do fluxo às respostas salvas da Etapa 4 e compara com a leitura manual (sem GPU). |
 | `preregister_context.py perguntas.jsonl --out arquivo.json` | Registra, antes de existirem respostas, os trechos e as seções por regra que a política congelada seleciona para um lote de perguntas (lê só `qa_id`, `pergunta` e `patient_id`). Grava versões e o SHA-256 da política. |
 
 ## Convenções

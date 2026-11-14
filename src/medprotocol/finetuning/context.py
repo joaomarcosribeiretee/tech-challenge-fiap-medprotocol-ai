@@ -114,7 +114,23 @@ def build_context(
         if conn is None:
             raise ValueError("pergunta cita paciente, mas nenhuma conexão com o banco foi fornecida")
         paciente = get_patient_summary(conn, patient_id, reference_date)
+    return assemble_context(pergunta, retriever, recuperacao, patient_id, paciente, reference_date, excluded_refs)
 
+
+def assemble_context(
+    pergunta: str,
+    retriever: ProtocolRetriever,
+    recuperacao: RetrievalResult,
+    patient_id: str | None,
+    paciente: dict | None,
+    reference_date: date = schedule.REFERENCE_DATE,
+    excluded_refs: frozenset[str] = frozenset(),
+) -> AssistantContext:
+    """Aplica a política de seções (v1) sobre a recuperação e o resumo do paciente já obtidos.
+
+    Separada de `build_context` para que o fluxo LangGraph execute consulta ao banco,
+    recuperação e política como etapas distintas, com o mesmo resultado.
+    """
     retrieved = {hit.ref for hit in recuperacao.hits}
     sections: list[RuleSection] = []
     already_retrieved: dict[str, tuple[str, ...]] = {}

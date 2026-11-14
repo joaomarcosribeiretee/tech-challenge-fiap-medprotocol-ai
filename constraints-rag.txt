@@ -20,3 +20,5 @@ scikit-learn==1.9.1
 pydantic==2.14.1
 langsmith==0.14.14
 pytest==9.2.0
+# Etapa 5 (fluxo LangGraph)
+langgraph==1.2.22
