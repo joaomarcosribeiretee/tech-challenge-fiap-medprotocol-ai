@@ -54,6 +54,10 @@ EXAM_TYPES = {
 }
 
 CATEGORIES = ("consulta_protocolo", "dados_ausentes", "contextualizada", "recusa", "revisao_humana")
+# Categorias do lote piloto de ampliação: aceitas, mas não exigidas em todos os splits (o split
+# de avaliação v1 não as contém e não é alterado).
+OPTIONAL_CATEGORIES = ("contexto_insuficiente", "selecao_de_trecho")
+ALL_CATEGORIES = CATEGORIES + OPTIONAL_CATEGORIES
 EVIDENCE_TYPES = ("protocolo", "exame", "consulta", "paciente")
 QA_REQUIRED = {
     "qa_id": str,
@@ -73,6 +77,8 @@ VERIFICATION_STATUSES = ("em_dia", "vencido", "ausente")
 # Heurísticas textuais mínimas: a resposta precisa sinalizar a recusa ou o encaminhamento.
 REVIEW_MARKERS = ("médico responsável", "equipe médica", "revisão", "validação", "validada")
 REFUSAL_MARKERS = ("não posso",)
+# contexto_insuficiente: a resposta precisa dizer que o contexto não sustenta a resposta.
+INSUFFICIENT_MARKERS = ("não traz", "não trazem", "não define", "não definem", "não tratam", "não há registro", "não abordam")
 
 ID_PATTERNS = {
     "patient_id": re.compile(r"^PAC-\d{4}$"),
@@ -325,7 +331,7 @@ def _check_qa_record(
     if record["split"] != split:
         report.errors.append(f"{where}: split={record['split']!r} no arquivo de {split}")
     category = record["categoria"]
-    if category not in CATEGORIES:
+    if category not in ALL_CATEGORIES:
         report.errors.append(f"{where}: categoria {category!r} inválida")
     for key in ("pergunta", "resposta_esperada"):
         if not record[key].strip():
@@ -345,7 +351,7 @@ def _check_qa_record(
             f"{where}: protocolos_citados {sorted(cited)} difere das evidências de protocolo "
             f"{sorted(protocol_refs)}"
         )
-    if not protocol_refs:
+    if not protocol_refs and category != "contexto_insuficiente":
         report.errors.append(f"{where}: todo caso precisa de ao menos uma evidência de protocolo")
 
     _check_category_rules(report, where, record)
@@ -430,6 +436,12 @@ def _check_category_rules(report: ValidationReport, where: str, record: dict) ->
         statuses = {v.get("status") for v in record.get("verificacoes_esperadas", []) if isinstance(v, dict)}
         if not statuses & {"vencido", "ausente"}:
             report.errors.append(f"{where}: dados_ausentes exige verificação vencida ou ausente")
+    if category == "contexto_insuficiente" and not any(marker in answer for marker in INSUFFICIENT_MARKERS):
+        report.errors.append(f"{where}: contexto_insuficiente exige que a resposta declare a insuficiência")
+    if category == "selecao_de_trecho":
+        protocol_evidences = [e for e in record["evidencias"] if isinstance(e, dict) and e.get("tipo") == "protocolo"]
+        if len(protocol_evidences) < 2:
+            report.errors.append(f"{where}: selecao_de_trecho exige ao menos dois trechos de protocolo em comparação")
     if category == "recusa" and not record["deve_recusar"]:
         report.errors.append(f"{where}: categoria recusa exige deve_recusar=true")
     if category == "revisao_humana":

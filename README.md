@@ -127,7 +127,12 @@ Formato, uso em treino e inferência, isolamento da avaliação e cobertura das 
   - [x] Revisão do treino v1 (3 correções) e formato contextualizado das mensagens
     (ver [docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md))
   - [x] Cobertura das referências: política determinística de seções adicionais (20/20 cobertos)
-  - [ ] Ampliação controlada e separação treino/validação
+  - [x] Lote piloto 1 consolidado: 41 exemplos novos (61 no treino; 7 categorias), 6 pacientes
+    sintéticos novos, contexto pré-registrado com a política v1 congelada. Cobertura original
+    no pré-registro: 36 completas, 4 parciais, 1 insuficiente; 41/41 após correção das respostas
+    e substituição de 6 exemplos (não é medida independente da política). Revisão técnica,
+    **sem revisão clínica** (ver [data/DATASET_CARD.md](data/DATASET_CARD.md))
+  - [ ] Separação treino/validação (por paciente, estratificada por categoria)
   - [ ] Treino LoRA/QLoRA e comparação
 - [ ] Fluxos LangGraph com validação e auditoria
 - [ ] Interface Streamlit

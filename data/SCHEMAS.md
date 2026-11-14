@@ -83,6 +83,11 @@ Um objeto JSON por linha.
 | `contextualizada` | `patient_id` + evidência do paciente |
 | `recusa` | `deve_recusar = true`; `requer_revisao_humana` pode ser `true` (recusa e encaminha) ou `false` |
 | `revisao_humana` | `requer_revisao_humana = true` e `deve_recusar = false` (encaminha sem recusar) |
+| `contexto_insuficiente` (opcional) | evidência de protocolo **pode** faltar; a resposta precisa declarar a insuficiência ("não traz", "não define", "não tratam", "não há registro", "não abordam"...) |
+| `selecao_de_trecho` (opcional) | ao menos dois trechos de protocolo em comparação |
+
+As cinco primeiras categorias são obrigatórias em cada split. As opcionais foram criadas no lote
+piloto 1 e existem só no treino; o split de avaliação v1 não é alterado.
 
 Recusa e revisão humana são coisas diferentes:
 - **Recusa** é quando o pedido é para o assistente produzir algo proibido: prescrição, dose, valor inventado, diagnóstico definitivo ou uso em paciente real.

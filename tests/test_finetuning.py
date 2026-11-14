@@ -78,7 +78,7 @@ def test_loads_only_training_file(tmp_path):
     """Funciona com um diretório que não tem eval/: o qa_eval nunca é necessário."""
     (tmp_path / "finetune").mkdir()
     shutil.copy(DATA_DIR / TRAIN_FILE, tmp_path / TRAIN_FILE)
-    assert len(load_training_examples(tmp_path)) == 20
+    assert len(load_training_examples(tmp_path)) == 61
     assert not (tmp_path / "eval").exists()
 
 

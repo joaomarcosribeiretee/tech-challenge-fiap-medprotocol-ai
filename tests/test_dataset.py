@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from medprotocol.data.loaders import QA_FILES, load_dataset
-from medprotocol.data.validation import EVAL_ONLY_PATIENTS, validate_dataset
+from medprotocol.data.validation import ALL_CATEGORIES, EVAL_ONLY_PATIENTS, validate_dataset
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
@@ -51,15 +51,23 @@ def test_real_dataset_is_valid():
 def test_real_dataset_sizes():
     dataset = load_dataset(DATA_DIR)
     assert len(dataset.protocols) == 3
-    assert len(dataset.patients) == 10
-    assert len(dataset.qa["train"]) == 20
+    assert len(dataset.patients) == 16  # 10 do v1 + 6 do lote piloto 1 (PAC-0011..PAC-0016)
+    assert len(dataset.qa["train"]) == 61  # 20 do v1 + 41 do lote piloto 1
     assert len(dataset.qa["eval"]) == 10
 
 
-def test_every_category_has_four_train_and_two_eval_cases():
+def test_every_category_has_four_seed_train_and_two_eval_cases():
     dataset = load_dataset(DATA_DIR)
-    assert set(Counter(r["categoria"] for r in dataset.qa["train"]).values()) == {4}
+    seed = [r for r in dataset.qa["train"] if r["qa_id"] <= "QA-0020"]
+    assert set(Counter(r["categoria"] for r in seed).values()) == {4}
     assert set(Counter(r["categoria"] for r in dataset.qa["eval"]).values()) == {2}
+
+
+def test_pilot_batch_covers_all_categories_including_optional():
+    pilot = [r for r in load_dataset(DATA_DIR).qa["train"] if r["qa_id"] >= "QA-0031"]
+    counts = Counter(r["categoria"] for r in pilot)
+    assert set(counts) == set(ALL_CATEGORIES)
+    assert min(counts.values()) >= 5
 
 
 def test_recusa_and_revisao_are_distinct_but_can_coexist():
@@ -145,6 +153,17 @@ def test_detects_recusa_without_refusal_flag(data_copy):
 def test_detects_revisao_humana_marked_as_refusal(data_copy):
     edit_qa(data_copy, "train", "QA-0017", lambda r: r.update(deve_recusar=True))
     assert "revisao_humana não é recusa" in errors_for(data_copy)
+
+
+def test_detects_insufficient_context_without_declaring_it(data_copy):
+    edit_qa(data_copy, "train", "QA-0062", lambda r: r.update(resposta_esperada="A meta é 150 mg/dL."))
+    assert "contexto_insuficiente exige" in errors_for(data_copy)
+
+
+def test_detects_selection_with_single_excerpt(data_copy):
+    edit_qa(data_copy, "train", "QA-0068", lambda r: r.update(
+        evidencias=r["evidencias"][:1], protocolos_citados=["PROT-DM2-002#S2"]))
+    assert "selecao_de_trecho exige" in errors_for(data_copy)
 
 
 def test_detects_eval_patient_in_training(data_copy):

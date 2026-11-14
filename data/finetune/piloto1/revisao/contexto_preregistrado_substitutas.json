@@ -1,0 +1,269 @@
+{
+  "policy_version": "1",
+  "policy_sha256": "11f1e9bb6847faf414fe039a107b5b33eaa7f4cf71612bd54980f44a988c3593",
+  "prompt_version": "2",
+  "k": 4,
+  "limiares": {
+    "lower": 0.8433,
+    "upper": 0.8709
+  },
+  "secoes_excluidas": [
+    "PROT-DM2-002#S4",
+    "PROT-DM2-003#S4"
+  ],
+  "perguntas": [
+    {
+      "qa_id": "QA-0072",
+      "pergunta": "O protocolo de hipoglicemia vale também para pacientes em acompanhamento ambulatorial?",
+      "patient_id": null,
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-002#REV",
+          "score": 0.8873
+        },
+        {
+          "ref": "PROT-DM2-001#LIM",
+          "score": 0.8864
+        },
+        {
+          "ref": "PROT-DM2-002#LIM",
+          "score": 0.8845
+        },
+        {
+          "ref": "PROT-DM2-001#S2",
+          "score": 0.8826
+        }
+      ],
+      "refs_por_regra": {},
+      "regras_em_recuperados": {}
+    },
+    {
+      "qa_id": "QA-0073",
+      "pergunta": "Em quanto tempo PAC-0013 deve repetir a HbA1c?",
+      "patient_id": "PAC-0013",
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-001#S3",
+          "score": 0.8784
+        },
+        {
+          "ref": "PROT-DM2-002#S3",
+          "score": 0.8449
+        },
+        {
+          "ref": "PROT-DM2-003#S3",
+          "score": 0.8428
+        },
+        {
+          "ref": "PROT-DM2-003#S5",
+          "score": 0.8347
+        }
+      ],
+      "refs_por_regra": {
+        "PROT-DM2-001#S4": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-001#REV": [
+          "revisao:pendencias"
+        ]
+      },
+      "regras_em_recuperados": {
+        "PROT-DM2-001#S3": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-003#S3": [
+          "regras_das_verificacoes"
+        ]
+      }
+    },
+    {
+      "qa_id": "QA-0074",
+      "pergunta": "A RAC de PAC-0003 atinge o limite de alerta do rastreamento renal?",
+      "patient_id": "PAC-0003",
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-003#S3",
+          "score": 0.8941
+        },
+        {
+          "ref": "PROT-DM2-003#REV",
+          "score": 0.8601
+        },
+        {
+          "ref": "PROT-DM2-003#LIM",
+          "score": 0.8594
+        },
+        {
+          "ref": "PROT-DM2-003#S5",
+          "score": 0.8492
+        }
+      ],
+      "refs_por_regra": {
+        "PROT-DM2-001#S4": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-001#S3": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-001#REV": [
+          "revisao:fora_do_limite:HBA1C",
+          "revisao:fora_do_limite:LDL",
+          "revisao:pendencias"
+        ]
+      },
+      "regras_em_recuperados": {
+        "PROT-DM2-003#S3": [
+          "regras_das_verificacoes"
+        ]
+      }
+    },
+    {
+      "qa_id": "QA-0075",
+      "pergunta": "PAC-0014 teve hipoglicemia na internação, mas a HbA1c dele está na meta. Uma coisa contradiz a outra?",
+      "patient_id": "PAC-0014",
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-002#S1",
+          "score": 0.8837
+        },
+        {
+          "ref": "PROT-DM2-002#LIM",
+          "score": 0.8784
+        },
+        {
+          "ref": "PROT-DM2-002#REV",
+          "score": 0.8747
+        },
+        {
+          "ref": "PROT-DM2-001#S3",
+          "score": 0.8745
+        }
+      ],
+      "refs_por_regra": {
+        "PROT-DM2-001#S4": [
+          "regras_das_verificacoes"
+        ],
+        "PROT-DM2-003#S3": [
+          "regras_das_verificacoes"
+        ],
+        "PROT-DM2-002#S2": [
+          "protocolo_vinculado:PROT-DM2-002"
+        ],
+        "PROT-DM2-002#S3": [
+          "protocolo_vinculado:PROT-DM2-002"
+        ],
+        "PROT-DM2-002#S5": [
+          "protocolo_vinculado:PROT-DM2-002"
+        ],
+        "PROT-DM2-003#REV": [
+          "revisao:fora_do_limite:TFG",
+          "revisao:fora_do_limite:RAC"
+        ]
+      },
+      "regras_em_recuperados": {
+        "PROT-DM2-001#S3": [
+          "regras_das_verificacoes"
+        ]
+      }
+    },
+    {
+      "qa_id": "QA-0076",
+      "pergunta": "A HbA1c de PAC-0011 passou só 0,1 ponto da meta. Dá para considerar dentro da meta e não levar ao médico?",
+      "patient_id": "PAC-0011",
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-001#S3",
+          "score": 0.8843
+        },
+        {
+          "ref": "PROT-DM2-002#LIM",
+          "score": 0.8781
+        },
+        {
+          "ref": "PROT-DM2-001#REV",
+          "score": 0.8768
+        },
+        {
+          "ref": "PROT-DM2-002#S1",
+          "score": 0.8737
+        }
+      ],
+      "refs_por_regra": {
+        "PROT-DM2-001#S4": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-003#S3": [
+          "regras_das_verificacoes"
+        ]
+      },
+      "regras_em_recuperados": {
+        "PROT-DM2-001#S3": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-001"
+        ],
+        "PROT-DM2-001#REV": [
+          "revisao:fora_do_limite:HBA1C"
+        ]
+      }
+    },
+    {
+      "qa_id": "QA-0077",
+      "pergunta": "A consulta de PAC-0015 já sinalizou a RAC ao médico. Os outros resultados dela também precisam ser sinalizados?",
+      "patient_id": "PAC-0015",
+      "status_recuperacao": "ok",
+      "refs_recuperadas": [
+        {
+          "ref": "PROT-DM2-003#S3",
+          "score": 0.8736
+        },
+        {
+          "ref": "PROT-DM2-003#REV",
+          "score": 0.8698
+        },
+        {
+          "ref": "PROT-DM2-003#S2",
+          "score": 0.8618
+        },
+        {
+          "ref": "PROT-DM2-003#S5",
+          "score": 0.8592
+        }
+      ],
+      "refs_por_regra": {
+        "PROT-DM2-001#S4": [
+          "regras_das_verificacoes"
+        ],
+        "PROT-DM2-001#S3": [
+          "regras_das_verificacoes"
+        ],
+        "PROT-DM2-001#REV": [
+          "revisao:fora_do_limite:HBA1C",
+          "revisao:fora_do_limite:LDL",
+          "revisao:pendencias"
+        ]
+      },
+      "regras_em_recuperados": {
+        "PROT-DM2-003#S3": [
+          "regras_das_verificacoes",
+          "protocolo_vinculado:PROT-DM2-003"
+        ],
+        "PROT-DM2-003#S5": [
+          "protocolo_vinculado:PROT-DM2-003"
+        ],
+        "PROT-DM2-003#REV": [
+          "revisao:fora_do_limite:RAC"
+        ]
+      }
+    }
+  ]
+}

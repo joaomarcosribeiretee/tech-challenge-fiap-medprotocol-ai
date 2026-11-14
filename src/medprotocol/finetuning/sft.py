@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from medprotocol.data.validation import EVAL_ONLY_PATIENTS
 from medprotocol.finetuning.context import build_context
+from medprotocol.finetuning.context_policy import POLICY_VERSION
 from medprotocol.finetuning.messages import PROMPT_VERSION, build_messages
 from medprotocol.finetuning.sources import RESERVED_SECTIONS, ReservedDataError, TrainingExample
 from medprotocol.rag.retriever import DEFAULT_K, ProtocolRetriever
@@ -61,6 +62,7 @@ def build_sft_record(
             "qa_id": example.qa_id,
             "categoria": example.rotulos.get("categoria"),
             "prompt_version": PROMPT_VERSION,
+            "policy_version": POLICY_VERSION,
             "k": k,
             "data_referencia": context.data_referencia.isoformat(),
             "patient_id": example.patient_id,

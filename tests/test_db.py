@@ -57,7 +57,7 @@ def replace_in(path, old, new):
 
 def test_build_imports_all_rows(tmp_path):
     result = build_database(DATA_DIR, tmp_path / "out" / "db.sqlite")
-    assert result.counts == {"patients": 10, "consultations": 10, "exams": 56}
+    assert result.counts == {"patients": 16, "consultations": 16, "exams": 88}  # v1 + lote piloto 1
     assert not (tmp_path / "out" / "db.sqlite.tmp").exists()
 
 

@@ -129,7 +129,7 @@ de treino e de inferência quando nenhuma seção reservada está envolvida: ela
 > `qa_eval.jsonl` apenas para checar vazamento entre treino e avaliação (comportamento da Etapa 2).
 > O código de fine-tuning não o lê.
 
-## Cobertura das referências (resultado atual)
+## Cobertura das referências (conjunto original, QA-0001..QA-0020)
 
 A cobertura é **auditoria**: compara `protocolos_citados` com o contexto **depois** que ele foi
 montado. Com k = 4, retriever e limiares inalterados, e a política acima:
@@ -159,6 +159,92 @@ Nos dois casos, a entrada mostra o status `sem_resultado_confiavel` da busca **e
 regras com os motivos. O modelo aprende que a resposta se apoia nas regras ligadas aos dados do
 paciente, e não na similaridade.
 
+## Generalização: lote piloto 1 (consolidado)
+
+> Esta seção registra primeiro o **resultado original** do pré-registro, que é a medida da
+> política v1 em perguntas novas. As correções feitas depois estão em "Consolidação" e **não** são
+> desempenho independente da política.
+
+**Política congelada:** `POLICY_VERSION = "1"`. As regras são as do commit `dc57d96`; só a
+constante de versão foi acrescentada. O SHA-256 de `context_policy.py` está no pré-registro.
+
+**Ordem do procedimento:**
+1. Gravar as perguntas, sem respostas (`data/finetune/piloto1/perguntas.jsonl`).
+2. Rodar `scripts/preregister_context.py`, que salva trechos, scores, status e seções por regra (`data/finetune/piloto1/contexto_preregistrado.json`).
+3. Escrever as respostas.
+4. Medir a cobertura.
+
+O contexto gerado no passo 4 é idêntico ao pré-registrado, e o hash do arquivo não mudou depois
+que as respostas foram escritas.
+
+Resultado original do pré-registro (41 perguntas QA-0031..QA-0071, antes de qualquer correção):
+
+| Medida | Original (20) | Piloto 1 (41) |
+|---|---|---|
+| Status original do retriever | ok 9 · incerto 9 · sem_resultado 2 | ok 17 · incerto 18 · sem_resultado 6 |
+| Cobertura completa | 20 | **36** |
+| Parcial (algumas citadas fora do contexto) | 0 | 4 |
+| Insuficiente (nenhuma citada no contexto) | 0 | 1 |
+| Fundamentação | regras 13 · similaridade 4 · ambas 3 | regras 21 · similaridade 14 · ambas 4 · nenhuma 2 |
+| Exemplos sem nenhuma seção por regra | 4 | 14 |
+
+A fundamentação "nenhuma" corresponde a QA-0065 (`contexto_insuficiente`, sem citações por
+desenho) e a QA-0056.
+
+**Lacunas encontradas (a política não foi alterada para escondê-las):**
+
+| Exemplo | Status | Falta | Causa |
+|---|---|---|---|
+| QA-0032 | ok | `001#S2` | O `003#S2` remete aos critérios do PROT-DM2-001; a política não segue referências cruzadas |
+| QA-0049 | sem_resultado | `001#LIM` | "começar uma estatina" não dispara `pedido_de_conduta` |
+| QA-0056 | incerto | `001#LIM` | "antibiótico… devo usar" não dispara nenhuma intenção; sem paciente, não há outras regras |
+| QA-0064 | incerto | `003#REV` | Pergunta sem paciente e sem intenção; a seção não foi recuperada |
+| QA-0071 | ok | `002#S3` | A busca trouxe S5, S1, LIM e REV do PROT-DM2-002, mas não a S3 |
+
+**Leitura:**
+- As regras ligadas aos dados do paciente generalizam bem: as 17 perguntas novas com paciente e com `dados_ausentes`/`contextualizada` ficaram todas cobertas.
+- A detecção de intenção por palavras-chave generaliza mal: disparou em 3 de 41 perguntas e falhou em paráfrases ("começar", "antibiótico", "coloque um valor", "apague").
+- Perguntas sem paciente dependem só da busca semântica.
+
+### Consolidação
+
+**Decisão:** reescrever as 5 respostas para citar só o que está no contexto. A política **não** foi
+alterada: `context_policy.py` continua com o SHA-256 `11f1e9bb…3593` registrado no pré-registro, e o
+único diff em relação a `dc57d96` é a constante `POLICY_VERSION = "1"`. Uma política v2 (referências
+cruzadas, vocabulário de intenção) continua em aberto. Se for criada, a cobertura terá de ser medida
+num lote novo, ainda sem respostas.
+
+**Correções** (detalhes em [data/DATASET_CARD.md](../data/DATASET_CARD.md)):
+- QA-0049 e QA-0064: a frase apoiada na seção ausente foi retirada.
+- QA-0032, QA-0056 e QA-0071: a resposta declara o que falta no contexto e responde com o que está nele.
+
+**Substituições:** 6 exemplos foram trocados por QA-0072..QA-0077, para aumentar a diversidade e
+reduzir a proximidade com a avaliação. Essas perguntas foram pré-registradas com a política v1
+(`piloto1/revisao/contexto_preregistrado_substitutas.json`) antes de as respostas serem escritas.
+
+Cobertura após a consolidação (`build_sft_dataset.py --strict`, k = 4):
+
+| Grupo | Exemplos | Status do retriever | Cobertura | Fundamentação |
+|---|---|---|---|---|
+| Piloto mantido sem alteração | 30 | — | completa 30 (já era) | — |
+| Piloto corrigido (lacunas) | 5 | (inalterado) | completa 5 **por reescrita da resposta** | similaridade 4 · regras 1 |
+| Substitutas (pré-registro novo) | 6 | ok 6 | completa 6 | regras 4 · similaridade 1 · ambas 1 |
+| **Piloto consolidado** | **41** | ok 22 · incerto 14 · sem_resultado 5 | **completa 41** | regras 21 · similaridade 15 · ambas 4 · nenhuma 1 |
+| Treino total (v1 + piloto) | 61 | ok 31 · incerto 23 · sem_resultado 7 | completa 61 | regras 34 · similaridade 19 · ambas 7 · nenhuma 1 |
+
+**Como ler estes números:**
+- **41/41 não é a nova taxa da política.** A medida da política em perguntas novas continua sendo
+  o resultado original: **36 completas, 4 parciais e 1 insuficiente**. Os 41/41 vêm de respostas
+  ajustadas ao contexto.
+- **Nas 6 substitutas, a cobertura completa também não é uma medida independente.** As respostas
+  foram escritas depois de ver o contexto pré-registrado. O pré-registro garante que a seleção não
+  dependeu das respostas, mas as respostas dependeram da seleção. Exemplo: na QA-0072 a seção de
+  objetivo do PROT-DM2-002 (`002#S1`) não foi recuperada, e a resposta se apoiou no título do
+  protocolo, que aparece no cabeçalho dos trechos `002#REV` e `002#LIM`.
+- Os contextos gerados para os 41 exemplos (35 originais + 6 substitutas) foram comparados com os
+  pré-registros (trechos, status e seções por regra): **0 divergências**.
+- Mensagem do usuário no treino consolidado: 1.790 a 9.284 caracteres (mediana 6.806).
+
 ## Limitações
 
 - **Validação dentro da amostra.** A política foi desenhada depois de ver quais seções faltavam nestes 20 exemplos. As regras são genéricas (dados do paciente, protocolo vinculado, intenção) e não dependem da resposta, mas o 20/20 não prova cobertura em perguntas novas. É preciso medir de novo nos exemplos da ampliação, antes de olhar as respostas.
@@ -167,5 +253,5 @@ paciente, e não na similaridade.
   - Uma delas está fora do escopo: "dose de amoxicilina" recebe `001#REV`/`001#LIM`. Isso é inofensivo, porque a REV manda recusar prescrição, mas acrescenta contexto a uma pergunta que deveria ser recusada por falta de cobertura.
 - **Tamanho:** com as seções por regra e o JSON do paciente, a entrada chega a cerca de 8.700 caracteres (cerca de 2.500 a 3.000 tokens), mais o prompt de sistema. O limite de contexto do modelo-base deve comportar isso, ou o JSON precisa ser compactado.
 - **Absorção pelo LangGraph:** a política e a montagem de contexto estão em `medprotocol.finetuning` por serem usadas primeiro aqui. Na etapa do LangGraph, podem ser movidas para um módulo compartilhado, sem mudar o comportamento.
-- **QA-0019** afirma que "o protocolo simulado não define critérios de alta". É uma afirmação de ausência: o contexto traz quase todo o PROT-DM2-001, mas não todas as seções. O risco é baixo; vale revisar na ampliação.
+- **QA-0019** afirmava que "o protocolo simulado não define critérios de alta", uma afirmação de ausência feita sem todas as seções no contexto. Corrigida no lote piloto 1 para "os trechos de protocolo disponíveis não trazem critérios".
 - **Validação:** a separação entre treino e validação (por paciente e estratificada por categoria, sem tocar no `qa_eval`) será feita depois da ampliação controlada.

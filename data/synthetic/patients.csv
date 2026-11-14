@@ -9,3 +9,9 @@ PAC-0007,F,1966,2012,nenhuma,metformina;gliclazida,nenhuma
 PAC-0008,M,1975,2017,dislipidemia,metformina;atorvastatina,dipirona
 PAC-0009,F,1960,2009,hipertensao,metformina;insulina_nph;losartana,nenhuma
 PAC-0010,M,1968,2016,nenhuma,metformina;sitagliptina,nenhuma
+PAC-0011,F,1972,2018,hipertensao,metformina;enalapril,nenhuma
+PAC-0012,M,1959,2005,hipertensao;dislipidemia,metformina;sitagliptina;rosuvastatina,iodo
+PAC-0013,F,1990,2023,nenhuma,metformina,nenhuma
+PAC-0014,M,1945,1998,hipertensao;doenca_renal_cronica;insuficiencia_cardiaca,insulina_nph;furosemida;carvedilol,nenhuma
+PAC-0015,F,1968,2014,obesidade,metformina;empagliflozina,nenhuma
+PAC-0016,M,1980,2020,nenhuma,metformina;dapagliflozina,nenhuma

@@ -31,6 +31,10 @@ from dataclasses import dataclass
 from medprotocol.data import schedule
 from medprotocol.rag.retriever import RetrievalHit
 
+# Versão congelada da política (regras e tabelas abaixo). Qualquer mudança de comportamento exige
+# incrementar a versão, regenerar os dados e medir de novo a cobertura (docs/FINETUNING_DATA.md).
+POLICY_VERSION = "1"
+
 PROTOCOL_ID_RE = re.compile(r"\bPROT-DM2-\d{3}\b")
 
 # Seções operacionais de cada protocolo, incluídas quando uma consulta do paciente o vincula.
