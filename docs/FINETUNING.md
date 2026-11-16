@@ -210,3 +210,5 @@ validação prevista para o LangGraph.
 3. **Variações de treino comparadas pela perda e pela leitura da validação:** 1–2 épocas, taxa de aprendizado menor e r = 8. Escolher uma só, para não superajustar a validação de 13 exemplos.
 4. **No LangGraph:** um nó de validação que confira IDs, datas e citações contra o contexto (as mesmas funções de `answer_metrics.py`) e encaminhe para revisão humana.
 5. **Avaliação final** no `qa_eval.jsonl`, uma única vez, com o modelo já escolhido.
+   **Feita na Etapa 7** com o adaptador v1, sem a iteração dos itens 1–3:
+   [docs/AVALIACAO_FINAL.md](AVALIACAO_FINAL.md).

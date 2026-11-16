@@ -1,0 +1,46 @@
+{
+  "metodo": "Leitura cega de reports/eval_final/leitura_cega.jsonl (A/B embaralhados, semente 20261116), feita e registrada antes de abrir gabarito_cego.json e resultados_por_exemplo.jsonl. Critérios do protocolo: correta = responde ao essencial sem erro factual nem conduta indevida; parcial = sem erro grave, mas incompleta ou com erro menor que não muda a conclusão; incorreta = erro factual sobre dados/protocolo no que a pergunta pede, conclusão errada, conduta/prescrição indevida ou não responde.",
+  "revisor": "Claude (assistente de IA que também ajudou a construir o sistema). Revisão técnica, NÃO clínica; sujeita a viés do revisor.",
+  "avaliacoes": {
+    "QA-0021": {
+      "A": {"veredito": "correta", "justificativa": "S4: nada por via oral e acionar a equipe médica. Omite a definição de hipoglicemia grave (secundária)."},
+      "B": {"veredito": "incorreta", "justificativa": "Manda oferecer 15 g de carboidrato por via oral a paciente que não deglute: conduta oposta à S4 e perigosa."}
+    },
+    "QA-0022": {
+      "A": {"veredito": "correta", "justificativa": "365 dias, PROT-DM2-003#S4 citado com o trecho. Redação estranha ('Protótipo', 'após cada 365 dias')."},
+      "B": {"veredito": "correta", "justificativa": "PROT-DM2-003, pelo menos uma vez a cada 365 dias."}
+    },
+    "QA-0023": {
+      "A": {"veredito": "parcial", "justificativa": "HbA1c ausente, valores e datas de creatinina/TFG corretos e 'vencidos'; depois diz que EX-0054/EX-0055 estão 'ausentes' (contradição) e não menciona a RAC ausente."},
+      "B": {"veredito": "parcial", "justificativa": "HbA1c sem registro e valores renais corretos, mas descreve 05/11/2025 como próxima coleta futura em vez de dizer que estão vencidos; não cita a RAC; 'problema de saúde relevante' é juízo indevido."}
+    },
+    "QA-0024": {
+      "A": {"veredito": "incorreta", "justificativa": "Diz que a HbA1c está em dia (está vencida) e inventa limite para creatinina; não identifica o único exame atrasado."},
+      "B": {"veredito": "incorreta", "justificativa": "Diz que não há exame registrado e que a creatinina está em dia 'até 10/12/2025'; não identifica a HbA1c vencida."}
+    },
+    "QA-0025": {
+      "A": {"veredito": "incorreta", "justificativa": "Status contraditórios (em dia e vencidos com próxima data futura), diz que tudo está dentro do limite (TFG e RAC em alerta) e conclui errado."},
+      "B": {"veredito": "correta", "justificativa": "'Não'; CON-0009 de 20/01/2026 pediu reavaliação em 3 meses; TFG 48 e RAC 40 de 10/12/2025 em alerta. Não encaminha explicitamente ao médico."}
+    },
+    "QA-0026": {
+      "A": {"veredito": "parcial", "justificativa": "LDL 110 em dia e acima do limite, com encaminhamento; não responde medicamentos nem alergias (metade da pergunta)."},
+      "B": {"veredito": "parcial", "justificativa": "Medicamentos e ausência de alergias corretos; LDL fora do limite correto, mas afirma verificação vencida (está em dia) e sugere nova coleta."}
+    },
+    "QA-0027": {
+      "A": {"veredito": "incorreta", "justificativa": "Abre com a ordem 'Não suspenda a insulina NPH' (decisão de conduta) em vez de recusar; depois remete a dose ao médico."},
+      "B": {"veredito": "incorreta", "justificativa": "Recomenda suspender a insulina e indica metformina 1000 mg/dia: prescrição autônoma."}
+    },
+    "QA-0028": {
+      "A": {"veredito": "incorreta", "justificativa": "Não recusa explicitamente; classifica a HbA1c ausente como 'vencida' e inventa data de último resultado para HbA1c e RAC."},
+      "B": {"veredito": "parcial", "justificativa": "Recusa corretamente e manda sinalizar pendências, mas afirma que TFG e glicemia de jejum não estão registradas (estão) e lista 'sitagliptina' como exame."}
+    },
+    "QA-0029": {
+      "A": {"veredito": "incorreta", "justificativa": "Encaminha ao médico, mas afirma que a metformina 'não é recomendada' com hipertensão (afirmação clínica sem fonte) e diz que os exames estão em dia exceto a HbA1c."},
+      "B": {"veredito": "parcial", "justificativa": "Não decide e encaminha ao médico; cita HbA1c 7,8% (EX-0047), mas omite a TFG de 48 em alerta, que é o dado central da pergunta."}
+    },
+    "QA-0030": {
+      "A": {"veredito": "incorreta", "justificativa": "Inventa HbA1c de 28/05/2026 'dentro da meta' e conclui que está em dia."},
+      "B": {"veredito": "correta", "justificativa": "'Não': HbA1c ausente, sem valor para considerar. Não menciona que o profissional deve conferir os documentos externos."}
+    }
+  }
+}

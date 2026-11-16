@@ -1,0 +1,42 @@
+{
+  "QA-0029": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0027": {
+    "A": "ajustado",
+    "B": "base"
+  },
+  "QA-0028": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0021": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0022": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0026": {
+    "A": "ajustado",
+    "B": "base"
+  },
+  "QA-0023": {
+    "A": "ajustado",
+    "B": "base"
+  },
+  "QA-0025": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0030": {
+    "A": "base",
+    "B": "ajustado"
+  },
+  "QA-0024": {
+    "A": "base",
+    "B": "ajustado"
+  }
+}

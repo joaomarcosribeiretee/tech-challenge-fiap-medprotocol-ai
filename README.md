@@ -1,213 +1,229 @@
 # MedProtocol AI
 
-Assistente educacional de apoio à consulta de protocolos hospitalares, desenvolvido para o
+Assistente educacional de consulta a protocolos hospitalares, desenvolvido para o
 **Tech Challenge Fase 3 — FIAP PosTech IA para Devs**.
 
-> ⚠️ Protótipo educacional. Todos os protocolos, pacientes e exames são **fictícios**.
-> O sistema não realiza diagnósticos, não prescreve e não substitui avaliação profissional.
+> ⚠️ Protótipo educacional. Todos os protocolos, pacientes e exames são **sintéticos**.
+> O sistema não diagnostica, não prescreve e não substitui avaliação profissional.
+> Nada foi revisado por profissional de saúde.
 
 ## Objetivo
 
-Apoiar profissionais na consulta de protocolos institucionais simulados de acompanhamento de
-pacientes com **diabetes mellitus tipo 2** em um hospital fictício, combinando um LLM ajustado
-(fine-tuning), recuperação de documentos com fontes (LangChain/RAG), dados estruturados (SQLite)
-e um fluxo explícito com validação (LangGraph). Especificação completa: [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md).
+Apoiar a consulta a protocolos institucionais **simulados** de acompanhamento de pacientes com
+diabetes mellitus tipo 2, num hospital fictício. O projeto combina:
+- um LLM ajustado por fine-tuning (LoRA);
+- recuperação de protocolos com fontes (LangChain);
+- dados estruturados de pacientes (SQLite);
+- um fluxo explícito com validação e auditoria (LangGraph).
 
-## Escopo
+Especificação: [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md).
 
-O assistente deverá: responder sobre protocolos simulados, consultar dados sintéticos de
-pacientes e exames, apontar informações ausentes, citar fontes, encaminhar recomendações para
-validação humana e registrar eventos de auditoria.
+## Funcionalidades
 
-Fora do escopo: hospitais ou prontuários reais, uso clínico, prescrição automatizada, app mobile,
-infraestrutura complexa de produção.
+**O assistente:**
+- responde sobre os protocolos, citando a seção (`PROT-DM2-001#S3`);
+- consulta o paciente no SQLite e informa último exame, histórico, o que está em dia, vencido,
+  ausente ou fora da meta;
+- aponta falta de informação, sem estimar valores;
+- recusa prescrição e diagnóstico e encaminha ao médico responsável.
+
+**Validação e rastreabilidade:**
+- Cada resposta passa por **validação determinística**. Alerta alto → resposta **retida**;
+  alerta médio ou gatilho clínico → **revisão humana**.
+- Cada execução vira um **evento de auditoria** (JSONL, sem o texto da pergunta e da resposta).
+
+**Interface Streamlit:**
+- status, resposta, fontes, alertas e ID de auditoria;
+- seletor modelo ajustado/base.
+
+**Fora do escopo:** dados reais, uso clínico, prescrição automatizada, mobile e produção.
+
+## Resultados em uma frase
+
+O fine-tuning LoRA foi real (Qwen2.5-1.5B, RTX 4070) e reduziu a perda, mas, na avaliação final
+reservada, **o modelo ajustado não demonstrou superioridade sobre o base**.
+- Leitura cega com 10 exemplos: 3/4/3 × 2/2/6 (correta/parcial/incorreta); p ≈ 0,38.
+- A heurística de status de exame aponta o contrário.
+- A camada de validação reteve as respostas perigosas e **nenhuma resposta incorreta saiu como
+  aprovada** nesse conjunto, mas ela tem falhas conhecidas.
+
+Detalhes: [`docs/AVALIACAO_FINAL.md`](docs/AVALIACAO_FINAL.md).
 
 ## Arquitetura
 
-Detalhes do grafo, validação e status: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+![Arquitetura do MedProtocol AI](docs/arquitetura.png)
 
-```
-Interface → LangGraph → LangChain/RAG + SQLite → LLM ajustada → Validação → Resposta com fontes e logs
-```
+O fluxo vai de Streamlit para LangGraph (7 nós). O grafo consulta o SQLite e o RAG LangChain,
+aplica a política de seções, gera com Qwen2.5 + LoRA, valida e registra a auditoria, devolvendo
+uma resposta estruturada. Fonte vetorial: [`docs/arquitetura.svg`](docs/arquitetura.svg).
+Grafo, regras e status: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Tecnologias propostas
+| Área | Tecnologia |
+|---|---|
+| Linguagem e testes | Python 3.14 (≥ 3.11), pytest |
+| Dados estruturados | SQLite |
+| Recuperação | LangChain (`InMemoryVectorStore`, `HuggingFaceEmbeddings`) + `multilingual-e5-small` (CPU) |
+| Fine-tuning | PyTorch CUDA, Transformers, PEFT (LoRA bf16); Qwen2.5-1.5B-Instruct |
+| Orquestração | LangGraph (estado explícito, validação determinística, auditoria) |
+| Interface | Streamlit |
 
-| Área | Tecnologia | Etapa em que entra |
+## Entregáveis
+
+| Entregável | Onde |
+|---|---|
+| Relatório técnico | [`docs/RELATORIO_TECNICO.md`](docs/RELATORIO_TECNICO.md) |
+| Avaliação final (base × ajustado) | [`docs/AVALIACAO_FINAL.md`](docs/AVALIACAO_FINAL.md), [`reports/eval_final/`](reports/eval_final/) |
+| Checklist dos requisitos da FIAP | [`docs/CHECKLIST_FIAP.md`](docs/CHECKLIST_FIAP.md) |
+| Diagrama de arquitetura | [`docs/arquitetura.svg`](docs/arquitetura.svg) / [`.png`](docs/arquitetura.png) |
+| Roteiro do vídeo | [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md) |
+| Pipeline de fine-tuning | `scripts/build_sft_dataset.py`, `split_sft_dataset.py`, `train_lora.py`, `compare_models.py`; [`docs/FINETUNING.md`](docs/FINETUNING.md) |
+| Integração LangChain (RAG) | `src/medprotocol/rag/`; [`docs/RAG.md`](docs/RAG.md) |
+| Fluxo LangGraph | `src/medprotocol/graph/`; [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Dataset sintético | `data/`; [`data/DATASET_CARD.md`](data/DATASET_CARD.md) |
+
+## Instalação
+
+Testado em **Windows 11 + NVIDIA RTX 4070 (12 GB) + Python 3.14.4**. São dois ambientes, para
+que a troca de torch (CPU × CUDA) não altere os limiares calibrados do RAG:
+
+| Ambiente | Conteúdo | Uso |
 |---|---|---|
-| Linguagem | Python ≥ 3.11 | 0 |
-| Testes | pytest | 0 |
-| Dados estruturados | SQLite | Dados sintéticos |
-| Recuperação | LangChain (`InMemoryVectorStore`) + `multilingual-e5-small` local | 3 |
-| Fine-tuning | Transformers, PEFT (LoRA bf16), PyTorch CUDA; Qwen2.5-1.5B-Instruct | 4 |
-| Orquestração | LangGraph (estado explícito, validação determinística, auditoria) | 5 |
-| Interface | Streamlit | 6 |
-
-As bibliotecas são adicionadas ao `pyproject.toml` somente na etapa que as utiliza, com versão documentada.
-
-## Preparar o ambiente
-
-Pré-requisito: Python 3.11 ou superior.
+| `.venv` | torch CPU + RAG | Dados, banco, índice e avaliação do RAG; testes sem GPU |
+| `.venv-train` | torch CUDA + RAG + LangGraph + PEFT + Streamlit | Treino, fluxo com modelo real, interface, avaliação final |
 
 ```powershell
-# Windows (PowerShell)
+# 1. Ambiente de dados/RAG (CPU)
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
-copy .env.example .env
-python -m pytest
+.venv\Scripts\python -m pip install -e ".[dev,rag]" -c constraints-rag.txt
+copy .env.example .env                     # opcional: os padrões já funcionam; nunca versione o .env
+
+# 2. Ambiente de treino/inferência (GPU)
+py -3.14 -m venv .venv-train
+.venv-train\Scripts\python -m pip install torch==2.14.1+cu130 --index-url https://download.pytorch.org/whl/cu130
+.venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph,ui]" -c constraints-train.txt
 ```
 
-```bash
-# Linux / macOS
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-cp .env.example .env
-python -m pytest
+**Downloads no primeiro uso:**
+- ~470 MB do modelo de embeddings;
+- ~3,1 GB do Qwen2.5-1.5B-Instruct (Apache-2.0).
+
+Não há chave de API. As configurações por variável de ambiente estão em
+[`.env.example`](.env.example).
+
+## Execução
+
+Todos os comandos são executados a partir da raiz do repositório.
+
+### Preparar dados (uma vez)
+
+```powershell
+.venv\Scripts\python scripts/validate_dataset.py      # validador do dataset sintético
+.venv\Scripts\python scripts/build_database.py        # data/processed/medprotocol.db (não versionado)
+.venv\Scripts\python scripts/build_index.py           # data/vectorstore/ (não versionado)
+.venv\Scripts\python scripts/build_sft_dataset.py     # data/processed/sft/train.jsonl
 ```
 
-> Nota: o fine-tuning usa um segundo ambiente (`.venv-train`) com PyTorch CUDA; ver a seção
-> "Fine-tuning LoRA" abaixo. Não foi preciso Python 3.11/3.12: há rodas CUDA para 3.14.
+### Treinar o adaptador LoRA (cerca de 4 min na RTX 4070)
 
-## Configuração
+```powershell
+.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json --smoke   # 2 passos
+.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
+.venv-train\Scripts\python scripts/compare_models.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json        # validação interna
+```
 
-Variáveis de ambiente documentadas em [`.env.example`](.env.example) e lidas por
-`medprotocol.config.load_settings()`. O arquivo `.env` nunca é versionado.
+O adaptador vai para `models/adapters/` (**não versionado**; é preciso treinar para usar o
+sistema). Os relatórios ficam em `reports/finetune/`.
+
+### Usar o assistente
+
+```powershell
+.venv-train\Scripts\python -m streamlit run app/streamlit_app.py          # interface em http://localhost:8501
+.venv-train\Scripts\python scripts/ask.py "Quando está prevista a próxima HbA1c de PAC-0001?"   # linha de comando (JSON)
+.venv-train\Scripts\python scripts/ask.py --variant base "..."            # modelo-base (adaptador desligado)
+```
+
+Perguntas de demonstração: [`scripts/demo/perguntas.txt`](scripts/demo/perguntas.txt) e
+[`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md). A auditoria vai para `logs/audit.jsonl`.
+
+### Avaliações
+
+```powershell
+.venv\Scripts\python scripts/evaluate_retrieval.py                       # RAG, conjunto de desenvolvimento
+.venv-train\Scripts\python scripts/ui_e2e.py --variants ajustado base    # teste real da interface
+.venv-train\Scripts\python scripts/evaluate_final.py --report            # recalcula o resumo da avaliação final (sem GPU)
+```
+
+A avaliação final (`evaluate_final.py --run`) **já foi executada uma vez** sobre o
+`qa_eval.jsonl`, sob protocolo congelado. O script recusa uma nova execução.
+
+## Testes
+
+```powershell
+.venv-train\Scripts\python -m pytest       # 244 testes (inclui interface e avaliação)
+.venv\Scripts\python -m pytest             # sem Streamlit: os testes de interface são pulados
+```
+
+Nenhum teste precisa de GPU: o LLM é simulado nos testes do fluxo e da interface. O modelo real
+é exercitado por `scripts/ask.py`, `scripts/ui_e2e.py` e `scripts/evaluate_final.py`.
 
 ## Estrutura
 
 ```
-AGENTS.md            instruções para agentes de desenvolvimento
-docs/                especificação e documentação técnica
-src/medprotocol/     código do pacote (config, data, db, rag, finetuning, graph, ui)
-app/                 interface Streamlit (streamlit_app.py)
+app/                 interface Streamlit
+src/medprotocol/     pacote: config, data, db, rag, finetuning, graph, ui, evaluation
+scripts/             scripts que orquestram cada etapa (ver scripts/README.md)
 tests/               testes pytest
-data/                dados sintéticos (ver data/README.md, SCHEMAS.md e DATASET_CARD.md)
-scripts/             scripts de preparação de dados (ver scripts/README.md)
+data/                dados sintéticos: protocolos, pacientes, exames, perguntas (DATASET_CARD.md)
+configs/finetune/    configuração do treino LoRA
+reports/             evidências versionadas: treino, comparação, demo, interface, avaliação final
+docs/                relatório, avaliação, checklist, arquitetura, roteiro e documentação técnica
 ```
 
-## Validar o dataset e gerar o banco
+**Não versionados (`.gitignore`):**
+- ambientes virtuais;
+- `.env`;
+- banco e índice (regeneráveis);
+- pesos e adaptadores (`/models/`, `*.safetensors`);
+- `logs/`.
 
-```powershell
-python scripts/validate_dataset.py
-python scripts/build_database.py          # gera data/processed/medprotocol.db (não versionado)
-python scripts/query_patient.py PAC-0001  # resumo estruturado do paciente em JSON
-```
+## Limitações
 
-Detalhes do schema, das funções de consulta e do tratamento de erros: [docs/DATABASE.md](docs/DATABASE.md).
+- **O modelo ajustado não é confiável:** troca exames, erra status de prazo e às vezes inventa
+  informação. A melhora do fine-tuning foi de estilo, não de fidelidade.
+- **Validação por regras textuais:**
+  - retém ou encaminha a maioria dos erros, mas não todos;
+  - deixou passar um "Não suspenda a insulina NPH" (exibido como pendente de revisão);
+  - reteve uma resposta correta por "não oferecer nada por via oral";
+  - "respondido" não garante que a resposta esteja completa.
+- **Amostras pequenas:** 61 exemplos de treino, 13 de validação e 10 de avaliação. Não há
+  significância estatística. A revisão técnica foi feita por IA, sem revisão clínica.
+- **Não há modelos de laudos e receitas** no dataset. A LLM e o SQLite entram no pipeline pelo
+  LangGraph, não como componentes LangChain (ver checklist).
+- **Infraestrutura mínima:**
+  - um ambiente testado (Windows + RTX 4070);
+  - auditoria em arquivo local;
+  - interface sem autenticação (só `localhost`).
 
-## Buscar trechos dos protocolos (RAG, sem LLM)
+Lista completa: [`docs/RELATORIO_TECNICO.md`](docs/RELATORIO_TECNICO.md) §9.
 
-Requer o extra opcional `rag` (embeddings locais; ~1 GB de dependências + modelo de 470 MB no primeiro uso):
+## Histórico das etapas
 
-```powershell
-python -m pip install -e ".[dev,rag]"                            # ou com -c constraints-rag.txt (versões testadas)
-python scripts/build_index.py                                     # índice em data/vectorstore/ (não versionado)
-python scripts/search_protocols.py "Qual é a periodicidade da HbA1c?" -k 3
-python scripts/evaluate_retrieval.py                              # métricas no conjunto de desenvolvimento
-```
+- [x] **Etapa 0** — Fundação (estrutura, configuração, testes)
+- [x] **Etapa 1** — Dataset sintético v1 ([`data/DATASET_CARD.md`](data/DATASET_CARD.md))
+- [x] **Etapa 2** — SQLite e funções de consulta ([`docs/DATABASE.md`](docs/DATABASE.md))
+- [x] **Etapa 3** — Recuperação de protocolos com LangChain ([`docs/RAG.md`](docs/RAG.md))
+- [x] **Etapa 4** — Fine-tuning LoRA real e comparação na validação interna ([`docs/FINETUNING.md`](docs/FINETUNING.md))
+  - lote piloto de 41 exemplos (61 no total) e split 48/13 sem paciente nos dois lados;
+  - perda 1,30 → 0,88, mas o ajustado **não ficou mais correto** na leitura;
+  - a iteração de dados/treino proposta **não foi feita**; o modelo avaliado é o v1.
+- [x] **Etapa 5** — Fluxo LangGraph com validação determinística e auditoria ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md))
+- [x] **Etapa 6** — Interface Streamlit (19 testes + teste real de 16 perguntas)
+- [x] **Etapa 7** — Avaliação final única no `qa_eval`, relatório, diagrama, checklist e roteiro
 
-Modelo, chunking, significado dos scores, métricas e limitações: [docs/RAG.md](docs/RAG.md).
+## Pendências que dependem do desenvolvedor
 
-## Preparar dados para fine-tuning (sem treinar)
-
-```powershell
-python scripts/build_sft_dataset.py       # mensagens com contexto RAG + regras + SQLite -> data/processed/sft/train.jsonl
-```
-
-Formato, uso em treino e inferência, isolamento da avaliação e cobertura das referências:
-[docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md).
-
-## Fine-tuning LoRA e comparação base × ajustado
-
-Usa um ambiente **separado** (`.venv-train`), com torch CUDA, para não alterar o ambiente do RAG.
-Requer GPU NVIDIA (testado numa RTX 4070 de 12 GB) e baixa ~3,1 GB de pesos do Qwen2.5-1.5B-Instruct
-(Apache-2.0) no primeiro uso.
-
-```powershell
-python scripts/split_sft_dataset.py               # (.venv) manifesto treino/validação, determinístico
-py -3.14 -m venv .venv-train
-.venv-train\Scripts\python -m pip install torch==2.14.1+cu130 --index-url https://download.pytorch.org/whl/cu130
-.venv-train\Scripts\python -m pip install -e ".[dev,train]" -c constraints-train.txt
-.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json --smoke
-.venv-train\Scripts\python scripts/train_lora.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
-.venv-train\Scripts\python scripts/compare_models.py --config configs/finetune/qwen2.5-1.5b-lora-v1.json
-```
-
-## Perguntar ao assistente (fluxo LangGraph)
-
-Executa no `.venv-train`, que tem RAG, LangGraph, torch CUDA e PEFT. A recuperação nesse
-ambiente é idêntica à do `.venv`; ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-```powershell
-.venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph]" -c constraints-train.txt
-.venv-train\Scripts\python scripts/ask.py "Quando está prevista a próxima HbA1c de PAC-0001?"
-.venv-train\Scripts\python scripts/ask.py --variant base "..."            # modelo-base (adaptador desligado)
-.venv-train\Scripts\python scripts/ask.py --file scripts/demo/perguntas.txt --out reports/graph/demo_ajustado.jsonl
-```
-
-A saída é JSON com `status` (`respondido`, `evidencia_insuficiente`, `revisao_humana` ou
-`erro`), `resposta`, `fontes`, `alertas` e `audit_id`. A auditoria vai para `logs/audit.jsonl`,
-sem o texto da pergunta nem o da resposta. **Passar nas verificações não significa segurança clínica.**
-
-## Interface Streamlit
-
-Também roda no `.venv-train`, a partir da raiz do repositório. Pré-requisitos: banco
-(`build_database.py`), índice (`build_index.py`), adaptador (`train_lora.py`) e GPU CUDA.
-
-```powershell
-.venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph,ui]" -c constraints-train.txt
-.venv-train\Scripts\python -m streamlit run app/streamlit_app.py      # abre em http://localhost:8501
-```
-
-A primeira carga leva cerca de 12 s: monta o fluxo e carrega o modelo uma única vez. Cada
-pergunta leva de 0 a 15 s. A tela tem:
-- campo de pergunta e seletor ajustado/base;
-- status colorido;
-- resposta ou, se retida, a mensagem do sistema, com o texto original numa área separada
-  "NÃO VALIDADO";
-- alertas, fontes e ID de auditoria;
-- aviso educacional fixo.
-
-Sem GPU ou sem adaptador, a tela avisa e só as perguntas que dispensam o modelo funcionam.
-Detalhes e limitações: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §8.
-
-```powershell
-.venv-train\Scripts\python scripts/ui_e2e.py --variants ajustado base --out reports/ui/e2e_streamlit.jsonl   # teste real da tela
-```
-
-O adaptador fica em `models/adapters/` (não versionado). Os relatórios de treino e comparação
-ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e limitações:
-[docs/FINETUNING.md](docs/FINETUNING.md).
-
-## Roadmap
-
-- [x] **Etapa 0** — Fundação do projeto (estrutura, configuração, testes)
-- [x] **Etapa 1** — Dataset sintético v1: 3 protocolos, 10 pacientes, 30 perguntas/respostas
-  (ver [data/DATASET_CARD.md](data/DATASET_CARD.md))
-- [x] **Etapa 2** — Persistência em SQLite e funções de consulta (ver [docs/DATABASE.md](docs/DATABASE.md))
-- [x] **Etapa 3** — Recuperação de protocolos com LangChain, sem LLM (revisada; métricas, limitações
-  e riscos de segurança em [docs/RAG.md](docs/RAG.md))
-- [ ] Fine-tuning (LoRA/QLoRA) e comparação base × ajustado
-  - [x] Revisão do treino v1 (3 correções) e formato contextualizado das mensagens
-    (ver [docs/FINETUNING_DATA.md](docs/FINETUNING_DATA.md))
-  - [x] Cobertura das referências: política determinística de seções adicionais (20/20 cobertos)
-  - [x] Lote piloto 1 consolidado: 41 exemplos novos (61 no treino; 7 categorias), 6 pacientes
-    sintéticos novos, contexto pré-registrado com a política v1 congelada. Cobertura original
-    no pré-registro: 36 completas, 4 parciais, 1 insuficiente; 41/41 após correção das respostas
-    e substituição de 6 exemplos (não é medida independente da política). Revisão técnica,
-    **sem revisão clínica** (ver [data/DATASET_CARD.md](data/DATASET_CARD.md))
-  - [x] Separação treino/validação: 48/13, sem paciente nos dois lados (`data/finetune/split_v1.json`)
-  - [x] Treino LoRA real (Qwen2.5-1.5B-Instruct, RTX 4070, 3,6 min) e comparação base × ajustado
-    na validação. A perda caiu de 1,30 para 0,88; o ajustado aprendeu formato, recusa e
-    encaminhamento, mas **não ficou mais correto** na leitura das respostas (ver [docs/FINETUNING.md](docs/FINETUNING.md))
-  - [ ] Iteração de dados/treino com base nos erros observados e avaliação final no `qa_eval`
-- [x] **Etapa 5** — Fluxo LangGraph: paciente (SQLite) → protocolos (RAG) → política v1 → Qwen2.5 + LoRA →
-  validação determinística → auditoria, com saída estruturada (status, fontes, alertas, ID de auditoria).
-  Testado com LLM simulado (25 testes) e com o modelo real em 8 perguntas. As regras retêm ou
-  encaminham a maioria dos erros, mas **não todos** (ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md))
-- [x] **Etapa 6** — Interface Streamlit sobre o fluxo da Etapa 5. Tem seletor ajustado/base, status,
-  fontes, alertas, ID de auditoria e área separada para o texto retido. Validada com 19 testes
-  (assistente simulado) e de ponta a ponta com o modelo real: 16 perguntas, resultados idênticos aos
-  de `ask.py` (ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §8)
-- [ ] Avaliação, relatório técnico e vídeo
+- [ ] Gravar o vídeo (até 15 min) seguindo [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md).
+- [ ] Decidir sobre os itens **parciais** da [checklist](docs/CHECKLIST_FIAP.md): modelos de
+  laudos/receitas e encapsulamento LangChain da LLM e do SQLite.
+- [ ] Confirmar se a entrega individual é aceita (o enunciado fala em grupo).
+- [ ] Revisar o relatório e fazer `git push`.
