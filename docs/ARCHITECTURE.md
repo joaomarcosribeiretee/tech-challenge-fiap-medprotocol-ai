@@ -216,16 +216,97 @@ Isso é coerente com a qualidade atual do modelo, mas reduz a utilidade.
   não o compensa.
 - O log de auditoria é um arquivo local, sem rotação nem controle de acesso.
 
-## 8. Próximo passo: interface Streamlit
+## 8. Interface Streamlit (Etapa 6)
 
-A interface só precisa chamar `create_assistant()` uma vez (cache do Streamlit) e
-`assistant.ask(pergunta)`. Ela deve exibir:
-- status (cor por status);
-- resposta e, quando retida, o texto original do modelo num bloco "para o revisor";
-- fontes com origem e marca de citada;
-- alertas;
-- ID de auditoria;
-- o aviso fixo;
-- um seletor ajustado/base que chama `generator.set_variant()`, sem recarregar o modelo.
+```powershell
+.venv-train\Scripts\python -m streamlit run app/streamlit_app.py
+```
 
-Executar no `.venv-train`.
+### Organização
+
+| Arquivo | Papel |
+|---|---|
+| `app/streamlit_app.py` | Só monta a tela: cache, formulário e exibição |
+| `src/medprotocol/ui/presenter.py` | Lógica testável sem Streamlit e sem LLM: status → rótulo/cor, título da resposta, tabelas de fontes e alertas, verificação do ambiente, mensagens de erro |
+| `.streamlit/config.toml` | `showErrorDetails = "none"` (sem stack trace na página), só `localhost`, sem telemetria |
+
+A interface não reimplementa nada do fluxo. Ela usa:
+- `create_assistant()` em `st.cache_resource`;
+- `generator.load()` uma vez, também em cache;
+- `generator.set_variant()` antes de cada `assistant.ask()`.
+
+Um `threading.Lock` impede que duas perguntas usem o gerador compartilhado ao mesmo tempo.
+
+### Regras de exibição
+
+| Status | Exibição |
+|---|---|
+| `respondido` | ✅ verde, "Resposta". Legenda: passar nas verificações não é validação clínica |
+| `revisao_humana`, sem retenção | ⚠️ laranja, "Resposta pendente de revisão humana (não aprovada)" |
+| `revisao_humana`, retida | ⚠️ laranja, "Mensagem do sistema (a resposta do modelo foi retida)" e a mensagem segura do fluxo |
+| `evidencia_insuficiente` | ℹ️ azul, "Resposta do sistema" |
+| `erro` | ⛔ vermelho, "Mensagem do sistema" |
+
+**Resposta retida:** o texto original do modelo nunca aparece como resposta. Ele fica num
+expansor fechado, "Conteúdo NÃO VALIDADO — somente para revisão técnica", com um aviso de
+bloqueio.
+
+**Alertas:** aparecem ordenados por severidade (alta, média, gatilho de revisão), com uma
+descrição legível de cada regra da §4.
+
+**Fontes:** os trechos citados vêm primeiro, com versão, situação (SIMULACAO) e origem (busca
+por similaridade ou regra da política v1).
+
+### Erros
+
+A verificação prévia não carrega nada pesado:
+- **Banco ou índice ausente:** a tela para, com o comando que resolve.
+- **Adaptador ausente, sem GPU ou sem PyTorch:** a tela avisa e não tenta carregar o modelo.
+  Perguntas que dispensam o modelo (paciente inexistente, fora do escopo) continuam
+  funcionando. As demais terminam com status `erro` e a mensagem "O modelo de linguagem não
+  está disponível".
+- **Falha ao carregar o modelo** (ex.: memória da GPU): `friendly_load_error` mostra uma
+  mensagem curta, sem caminhos.
+
+Em todos os casos, o detalhe técnico vai só para o log do terminal.
+
+### Verificação
+
+- **`tests/test_ui.py`** (19 testes, sem GPU):
+  - lógica de exibição;
+  - todos os códigos de alerta do fluxo com descrição;
+  - mensagens sem caminhos;
+  - a tela em `streamlit.testing.v1.AppTest` com assistente simulado: aviso fixo, seletor,
+    variante enviada ao gerador, texto retido só no expansor, pergunta vazia, banco ausente.
+- **`scripts/ui_e2e.py`, com o fluxo real** (sem simulação: SQLite + RAG + LangGraph +
+  Qwen2.5 + LoRA, RTX 4070). Executa a tela, preenche e envia as 8 perguntas de
+  `scripts/demo/perguntas.txt` nas duas variantes. Resultado em
+  `reports/ui/e2e_streamlit.jsonl` e auditoria em `reports/ui/audit_e2e.jsonl` (16 eventos,
+  só hashes):
+  - 0 exceções na tela; inicialização de 12 s, depois 0 a 14 s por pergunta;
+  - status, alertas e retenção **idênticos** aos de `scripts/ask.py`
+    (`reports/graph/demo_*.jsonl`): a interface não altera o fluxo;
+  - 4 respostas retidas (ajustado: PAC-0001 `valor_trocado` e hipoglicemia em paciente
+    inconsciente; base: prescrição sem recusa e hipoglicemia). Nas 4, o texto original
+    apareceu só na área "NÃO VALIDADO".
+- **Sem GPU** (`CUDA_VISIBLE_DEVICES=-1`, mesmo script): aviso de GPU na tela, status `erro`
+  na pergunta que exige o modelo, `evidencia_insuficiente` para PAC-0099, nenhuma exceção.
+- **Servidor:** `streamlit run` respondeu `ok` em `/_stcore/health`. A tela não foi inspecionada
+  visualmente num navegador nesta etapa; a verificação usa o AppTest, que executa o mesmo script.
+
+### Limitações observadas
+
+- **A maioria das respostas não sai aprovada.** Das 16, só 2 foram `respondido` (uma por
+  variante); 10 foram `revisao_humana` (4 retidas) e 4 `evidencia_insuficiente`. Isso
+  reflete as regras conservadoras e a fraqueza do modelo ajustado em fidelidade (§7). A
+  interface não esconde isso.
+- **A variante ajustada não se sai melhor na tela.** Em PAC-0001 o ajustado foi retido por
+  atribuir o valor errado a um exame. O base deu a data correta e foi para revisão só por não
+  citar fonte. A tela mostra o que o validador detecta, não a correção clínica.
+- **O seletor ajustado/base é global ao processo**, porque o gerador está em
+  `cache_resource`. Com várias abas, a variante vale para a pergunta em curso, sob o lock.
+  Isso basta para uma demonstração de um usuário.
+- **Sem autenticação.** Por isso `.streamlit/config.toml` limita o servidor a `localhost`.
+- **Detalhes dos alertas** podem conter valores de exames sintéticos (ex.: "fora da meta:
+  HbA1c"). Com dados reais, isso exigiria controle de acesso.
+- O primeiro uso baixa os pesos do modelo (cerca de 3,1 GB) se não estiverem em cache.

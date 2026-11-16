@@ -24,3 +24,9 @@ langchain-huggingface==1.2.3
 sentence-transformers==6.2.0
 scipy==1.18.1
 scikit-learn==1.9.1
+# Etapa 6 (interface Streamlit) e principais dependências que ela instala
+streamlit==1.67.0
+pandas==3.1.1
+pyarrow==26.0.1
+altair==6.3.0
+protobuf==7.36.2

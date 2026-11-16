@@ -25,6 +25,10 @@ rag = [
 graph = [
     "langgraph>=1.2,<2",
 ]
+# Etapa 6 — interface Streamlit (roda no .venv-train, junto com train, rag e graph).
+ui = [
+    "streamlit>=1.67,<2",
+]
 # Etapa 4 — fine-tuning LoRA. Instalar em ambiente SEPARADO (.venv-train), com torch CUDA
 # do índice do PyTorch; ver docs/FINETUNING.md e constraints-train.txt.
 train = [

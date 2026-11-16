@@ -40,7 +40,7 @@ Interface → LangGraph → LangChain/RAG + SQLite → LLM ajustada → Validaç
 | Recuperação | LangChain (`InMemoryVectorStore`) + `multilingual-e5-small` local | 3 |
 | Fine-tuning | Transformers, PEFT (LoRA bf16), PyTorch CUDA; Qwen2.5-1.5B-Instruct | 4 |
 | Orquestração | LangGraph (estado explícito, validação determinística, auditoria) | 5 |
-| Interface | Streamlit | Interface |
+| Interface | Streamlit | 6 |
 
 As bibliotecas são adicionadas ao `pyproject.toml` somente na etapa que as utiliza, com versão documentada.
 
@@ -79,7 +79,8 @@ Variáveis de ambiente documentadas em [`.env.example`](.env.example) e lidas po
 ```
 AGENTS.md            instruções para agentes de desenvolvimento
 docs/                especificação e documentação técnica
-src/medprotocol/     código do pacote (config, data, db, rag, finetuning, graph; futuro: ui)
+src/medprotocol/     código do pacote (config, data, db, rag, finetuning, graph, ui)
+app/                 interface Streamlit (streamlit_app.py)
 tests/               testes pytest
 data/                dados sintéticos (ver data/README.md, SCHEMAS.md e DATASET_CARD.md)
 scripts/             scripts de preparação de dados (ver scripts/README.md)
@@ -149,6 +150,32 @@ A saída é JSON com `status` (`respondido`, `evidencia_insuficiente`, `revisao_
 `erro`), `resposta`, `fontes`, `alertas` e `audit_id`. A auditoria vai para `logs/audit.jsonl`,
 sem o texto da pergunta nem o da resposta. **Passar nas verificações não significa segurança clínica.**
 
+## Interface Streamlit
+
+Também roda no `.venv-train`, a partir da raiz do repositório. Pré-requisitos: banco
+(`build_database.py`), índice (`build_index.py`), adaptador (`train_lora.py`) e GPU CUDA.
+
+```powershell
+.venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph,ui]" -c constraints-train.txt
+.venv-train\Scripts\python -m streamlit run app/streamlit_app.py      # abre em http://localhost:8501
+```
+
+A primeira carga leva cerca de 12 s: monta o fluxo e carrega o modelo uma única vez. Cada
+pergunta leva de 0 a 15 s. A tela tem:
+- campo de pergunta e seletor ajustado/base;
+- status colorido;
+- resposta ou, se retida, a mensagem do sistema, com o texto original numa área separada
+  "NÃO VALIDADO";
+- alertas, fontes e ID de auditoria;
+- aviso educacional fixo.
+
+Sem GPU ou sem adaptador, a tela avisa e só as perguntas que dispensam o modelo funcionam.
+Detalhes e limitações: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §8.
+
+```powershell
+.venv-train\Scripts\python scripts/ui_e2e.py --variants ajustado base --out reports/ui/e2e_streamlit.jsonl   # teste real da tela
+```
+
 O adaptador fica em `models/adapters/` (não versionado). Os relatórios de treino e comparação
 ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e limitações:
 [docs/FINETUNING.md](docs/FINETUNING.md).
@@ -179,5 +206,8 @@ ficam em `reports/finetune/`. Escolha do modelo, hiperparâmetros, resultados e 
   validação determinística → auditoria, com saída estruturada (status, fontes, alertas, ID de auditoria).
   Testado com LLM simulado (25 testes) e com o modelo real em 8 perguntas. As regras retêm ou
   encaminham a maioria dos erros, mas **não todos** (ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md))
-- [ ] Interface Streamlit
+- [x] **Etapa 6** — Interface Streamlit sobre o fluxo da Etapa 5. Tem seletor ajustado/base, status,
+  fontes, alertas, ID de auditoria e área separada para o texto retido. Validada com 19 testes
+  (assistente simulado) e de ponta a ponta com o modelo real: 16 perguntas, resultados idênticos aos
+  de `ask.py` (ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §8)
 - [ ] Avaliação, relatório técnico e vídeo
