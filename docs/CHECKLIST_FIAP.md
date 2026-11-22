@@ -55,7 +55,7 @@ transcreve o requisito do PDF, e não a especificação interna (`docs/PROJECT_S
 | Relatório: descrição do assistente médico | ✅ | `docs/RELATORIO_TECNICO.md` §2 e §6–7 |
 | Relatório: diagrama do fluxo LangChain | ✅ | `docs/arquitetura.svg` / `docs/arquitetura.png` |
 | Relatório: avaliação do modelo e análise dos resultados | ✅ | `docs/AVALIACAO_FINAL.md`, `docs/RELATORIO_TECNICO.md` §8 |
-| Vídeo de até 15 min: treinamento e funcionamento da LLM | ✅ | [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI) (~13 min), roteiro em `docs/ROTEIRO_VIDEO.md` |
+| Vídeo de até 15 min: treinamento e funcionamento da LLM | ✅ | [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI) (~13 min) |
 | Vídeo: execução de um fluxo automatizado | ✅ | idem |
 | Vídeo: resposta a perguntas clínicas contextualizadas | ✅ | idem |
 | Vídeo: logs e validação das respostas | ✅ | idem |

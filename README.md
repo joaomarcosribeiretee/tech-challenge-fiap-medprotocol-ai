@@ -82,7 +82,6 @@ Grafo, regras e status: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Avaliação final (base × ajustado) | [`docs/AVALIACAO_FINAL.md`](docs/AVALIACAO_FINAL.md), [`reports/eval_final/`](reports/eval_final/) |
 | Checklist dos requisitos da FIAP | [`docs/CHECKLIST_FIAP.md`](docs/CHECKLIST_FIAP.md) |
 | Diagrama de arquitetura | [`docs/arquitetura.svg`](docs/arquitetura.svg) / [`.png`](docs/arquitetura.png) |
-| Roteiro do vídeo | [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md) |
 | Vídeo da demonstração | [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI) |
 | Pipeline de fine-tuning | `scripts/build_sft_dataset.py`, `split_sft_dataset.py`, `train_lora.py`, `compare_models.py`; [`docs/FINETUNING.md`](docs/FINETUNING.md) |
 | Integração LangChain (RAG) | `src/medprotocol/rag/`; [`docs/RAG.md`](docs/RAG.md) |
@@ -150,8 +149,8 @@ sistema). Os relatórios ficam em `reports/finetune/`.
 .venv-train\Scripts\python scripts/ask.py --variant base "..."            # modelo-base (adaptador desligado)
 ```
 
-Perguntas de demonstração: [`scripts/demo/perguntas.txt`](scripts/demo/perguntas.txt) e
-[`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md). A auditoria vai para `logs/audit.jsonl`.
+Perguntas de demonstração: [`scripts/demo/perguntas.txt`](scripts/demo/perguntas.txt).
+A auditoria vai para `logs/audit.jsonl`.
 
 ### Avaliações
 
@@ -184,7 +183,7 @@ tests/               testes pytest
 data/                dados sintéticos: protocolos, pacientes, exames, perguntas (DATASET_CARD.md)
 configs/finetune/    configuração do treino LoRA
 reports/             evidências versionadas: treino, comparação, demo, interface, avaliação final
-docs/                relatório, avaliação, checklist, arquitetura, roteiro e documentação técnica
+docs/                relatório, avaliação, checklist, arquitetura e documentação técnica
 ```
 
 **Não versionados (`.gitignore`):**
@@ -225,11 +224,11 @@ Lista completa: [`docs/RELATORIO_TECNICO.md`](docs/RELATORIO_TECNICO.md) §9.
   - a iteração de dados/treino proposta **não foi feita**; o modelo avaliado é o v1.
 - [x] **Etapa 5** — Fluxo LangGraph com validação determinística e auditoria ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md))
 - [x] **Etapa 6** — Interface Streamlit (19 testes + teste real de 16 perguntas)
-- [x] **Etapa 7** — Avaliação final única no `qa_eval`, relatório, diagrama, checklist e roteiro
+- [x] **Etapa 7** — Avaliação final única no `qa_eval`, relatório, diagrama e checklist
 
 ## Pendências que dependem do desenvolvedor
 
-- [x] Gravar o vídeo (até 15 min) seguindo [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md). Publicado: [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI).
+- [x] Gravar o vídeo (até 15 min). Publicado: [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI).
 - [x] LLM customizada e consulta SQLite como componentes LangChain (`src/medprotocol/graph/lc_components.py`).
 - [ ] Aceitar como limitação (ou não) o item **parcial** da [checklist](docs/CHECKLIST_FIAP.md):
   modelos de laudos/receitas fora do dataset.
