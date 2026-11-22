@@ -7,6 +7,12 @@ Assistente educacional de consulta a protocolos hospitalares, desenvolvido para 
 > O sistema não diagnostica, não prescreve e não substitui avaliação profissional.
 > Nada foi revisado por profissional de saúde.
 
+## Demonstração
+
+[![Demonstração do MedProtocol AI](https://img.youtube.com/vi/VpMtM8cumbI/hqdefault.jpg)](https://www.youtube.com/watch?v=VpMtM8cumbI)
+
+Vídeo da entrega (cerca de 13 minutos): fine-tuning, fluxo LangGraph, perguntas na interface, logs e validação. [Assistir no YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI).
+
 ## Objetivo
 
 Apoiar a consulta a protocolos institucionais **simulados** de acompanhamento de pacientes com
@@ -64,6 +70,7 @@ Grafo, regras e status: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Dados estruturados | SQLite |
 | Recuperação | LangChain (`InMemoryVectorStore`, `HuggingFaceEmbeddings`) + `multilingual-e5-small` (CPU) |
 | Fine-tuning | PyTorch CUDA, Transformers, PEFT (LoRA bf16); Qwen2.5-1.5B-Instruct |
+| Integração da LLM e do banco | LangChain: `BaseChatModel` sobre o Qwen2.5 + LoRA (cadeia LCEL) e consulta SQLite como `Runnable` |
 | Orquestração | LangGraph (estado explícito, validação determinística, auditoria) |
 | Interface | Streamlit |
 
@@ -76,6 +83,7 @@ Grafo, regras e status: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Checklist dos requisitos da FIAP | [`docs/CHECKLIST_FIAP.md`](docs/CHECKLIST_FIAP.md) |
 | Diagrama de arquitetura | [`docs/arquitetura.svg`](docs/arquitetura.svg) / [`.png`](docs/arquitetura.png) |
 | Roteiro do vídeo | [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md) |
+| Vídeo da demonstração | [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI) |
 | Pipeline de fine-tuning | `scripts/build_sft_dataset.py`, `split_sft_dataset.py`, `train_lora.py`, `compare_models.py`; [`docs/FINETUNING.md`](docs/FINETUNING.md) |
 | Integração LangChain (RAG) | `src/medprotocol/rag/`; [`docs/RAG.md`](docs/RAG.md) |
 | Fluxo LangGraph | `src/medprotocol/graph/`; [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
@@ -159,7 +167,7 @@ A avaliação final (`evaluate_final.py --run`) **já foi executada uma vez** so
 ## Testes
 
 ```powershell
-.venv-train\Scripts\python -m pytest       # 244 testes (inclui interface e avaliação)
+.venv-train\Scripts\python -m pytest       # 254 testes (inclui interface e avaliação)
 .venv\Scripts\python -m pytest             # sem Streamlit: os testes de interface são pulados
 ```
 
@@ -197,8 +205,7 @@ docs/                relatório, avaliação, checklist, arquitetura, roteiro e 
   - "respondido" não garante que a resposta esteja completa.
 - **Amostras pequenas:** 61 exemplos de treino, 13 de validação e 10 de avaliação. Não há
   significância estatística. A revisão técnica foi feita por IA, sem revisão clínica.
-- **Não há modelos de laudos e receitas** no dataset. A LLM e o SQLite entram no pipeline pelo
-  LangGraph, não como componentes LangChain (ver checklist).
+- **Não há modelos de laudos e receitas** no dataset (ver checklist).
 - **Infraestrutura mínima:**
   - um ambiente testado (Windows + RTX 4070);
   - auditoria em arquivo local;
@@ -222,8 +229,9 @@ Lista completa: [`docs/RELATORIO_TECNICO.md`](docs/RELATORIO_TECNICO.md) §9.
 
 ## Pendências que dependem do desenvolvedor
 
-- [ ] Gravar o vídeo (até 15 min) seguindo [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md).
-- [ ] Decidir sobre os itens **parciais** da [checklist](docs/CHECKLIST_FIAP.md): modelos de
-  laudos/receitas e encapsulamento LangChain da LLM e do SQLite.
+- [x] Gravar o vídeo (até 15 min) seguindo [`docs/ROTEIRO_VIDEO.md`](docs/ROTEIRO_VIDEO.md). Publicado: [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI).
+- [x] LLM customizada e consulta SQLite como componentes LangChain (`src/medprotocol/graph/lc_components.py`).
+- [ ] Aceitar como limitação (ou não) o item **parcial** da [checklist](docs/CHECKLIST_FIAP.md):
+  modelos de laudos/receitas fora do dataset.
 - [ ] Confirmar se a entrega individual é aceita (o enunciado fala em grupo).
 - [ ] Revisar o relatório e fazer `git push`.

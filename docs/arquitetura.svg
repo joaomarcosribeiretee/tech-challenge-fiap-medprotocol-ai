@@ -77,17 +77,17 @@
     <rect x="640" y="410" width="290" height="68" rx="8" fill="#fef9c3"/>
     <rect x="640" y="556" width="290" height="56" rx="8" fill="#f1f5f9"/>
   </g>
-  <text x="654" y="222" font-weight="700" fill="#0f172a">SQLite (somente leitura)</text>
+  <text x="654" y="222" font-weight="700" fill="#0f172a">SQLite · LangChain Runnable</text>
   <text x="654" y="240" font-size="12" fill="#334155">16 pacientes, 16 consultas, 88 exames</text>
-  <text x="654" y="256" font-size="12" fill="#334155">sintéticos · data/processed/medprotocol.db</text>
+  <text x="654" y="256" font-size="12" fill="#334155">sintéticos · somente leitura · medprotocol.db</text>
 
   <text x="654" y="302" font-weight="700" fill="#0f172a">LangChain RAG</text>
   <text x="654" y="320" font-size="12" fill="#334155">InMemoryVectorStore + multilingual-e5-small</text>
   <text x="654" y="336" font-size="12" fill="#334155">3 protocolos simulados → 20 trechos</text>
   <text x="654" y="352" font-size="12" fill="#334155">referência PROTOCOLO#SEÇÃO (fonte)</text>
 
-  <text x="654" y="432" font-weight="700" fill="#0f172a">Qwen2.5-1.5B-Instruct + LoRA</text>
-  <text x="654" y="450" font-size="12" fill="#334155">modelo local na GPU (bf16); a variante</text>
+  <text x="654" y="432" font-weight="700" fill="#0f172a">Qwen2.5-1.5B + LoRA · LangChain</text>
+  <text x="654" y="450" font-size="12" fill="#334155">BaseChatModel (LCEL) · GPU bf16; a variante</text>
   <text x="654" y="466" font-size="12" fill="#334155">"base" só desliga o adaptador</text>
 
   <text x="654" y="578" font-weight="700" fill="#0f172a">Auditoria</text>

@@ -22,8 +22,8 @@ transcreve o requisito do PDF, e não a especificação interna (`docs/PROJECT_S
 
 | Requisito (PDF) | Status | Implementação | Evidência verificável |
 |---|---|---|---|
-| Usar LangChain para construir um pipeline que integre a LLM customizada | 🟡 | O pipeline é um **LangGraph** (biblioteca do projeto LangChain) que chama o Qwen2.5 + LoRA no nó `gerar_resposta`. **Ressalva:** o modelo é chamado via Transformers/PEFT (`LocalQwenGenerator`), sem estar encapsulado como `ChatModel`/`Runnable` do LangChain | `src/medprotocol/graph/workflow.py`, `src/medprotocol/graph/llm.py` |
-| … realizar consultas em base de dados estruturada | 🟡 | O nó `consultar_paciente` do LangGraph consulta o SQLite (pacientes, consultas, exames) em modo somente leitura. **Ressalva:** a consulta usa `sqlite3`, não um componente SQL do LangChain | `src/medprotocol/db/repository.py`, `docs/DATABASE.md`, `tests/test_db.py` |
+| Usar LangChain para construir um pipeline que integre a LLM customizada | ✅ | O Qwen2.5 + LoRA (`LocalQwenGenerator`) é envolvido em `MedProtocolChatModel`, um `BaseChatModel` do LangChain, numa cadeia LCEL `mensagens → ChatModel → StrOutputParser`. O nó `gerar_resposta` do LangGraph invoca essa cadeia. O prompt que chega ao modelo é idêntico ao anterior: as 16 respostas da demonstração (8 ajustado + 8 base), regeradas na GPU após a mudança, saíram iguais às registradas | `src/medprotocol/graph/lc_components.py`, `src/medprotocol/graph/workflow.py`, `tests/test_lc_components.py` |
+| … realizar consultas em base de dados estruturada | ✅ | A consulta ao SQLite (pacientes, consultas, exames; somente leitura) é um `RunnableLambda` do LangChain (`build_patient_lookup`), invocado pelo nó `consultar_paciente` | `src/medprotocol/graph/lc_components.py`, `src/medprotocol/db/repository.py`, `docs/DATABASE.md`, `tests/test_lc_components.py` |
 | … contextualizar as respostas com informações atualizadas do paciente | ✅ | Resumo do paciente na data de referência (último exame, histórico, verificações pendentes, fora da meta) entra no prompt | `src/medprotocol/finetuning/context.py`, `messages.py`; demonstração em `reports/ui/e2e_streamlit.jsonl` |
 | (Contexto do desafio) recuperação de protocolos internos | ✅ | LangChain `InMemoryVectorStore` + `HuggingFaceEmbeddings` (e5-small), com referência PROTOCOLO#SEÇÃO | `src/medprotocol/rag/`, `docs/RAG.md` (Hit@1 0,864; Hit@3 0,955 no conjunto de desenvolvimento) |
 
@@ -41,24 +41,24 @@ transcreve o requisito do PDF, e não a especificação interna (`docs/PROJECT_S
 |---|---|---|---|
 | Projeto modularizado em Python | ✅ | Pacote `medprotocol` com `data`, `db`, `rag`, `finetuning`, `graph`, `ui` e `evaluation`; scripts só orquestram | `src/medprotocol/`, `scripts/README.md` |
 | Instruções completas no README | ✅ | Instalação dos dois ambientes, dados, índice, treino, fluxo, interface, avaliação e testes | `README.md` |
-| (Adicional) testes automatizados | ✅ | 244 testes pytest | `tests/`, comando no README |
+| (Adicional) testes automatizados | ✅ | 254 testes pytest | `tests/`, comando no README |
 
 ## Entregáveis da Fase 3
 
 | Entregável (PDF) | Status | Onde |
 |---|---|---|
 | Código-fonte: pipeline de fine-tuning | ✅ | `scripts/build_sft_dataset.py`, `split_sft_dataset.py`, `train_lora.py`, `compare_models.py` |
-| Código-fonte: integração com LangChain | 🟡 | RAG com LangChain ✅; a LLM e o SQLite entram pelo LangGraph, não como componentes LangChain (ver item 2) |
+| Código-fonte: integração com LangChain | ✅ | RAG (`src/medprotocol/rag/`), LLM customizada como `BaseChatModel` e consulta SQLite como `Runnable` (`src/medprotocol/graph/lc_components.py`) |
 | Código-fonte: fluxos do LangGraph | ✅ | `src/medprotocol/graph/workflow.py` (7 nós, arestas condicionais) |
 | Dataset anonimizado ou exemplo de dados sintéticos | ✅ | `data/` + `data/DATASET_CARD.md` |
 | Relatório: explicação do processo de fine-tuning | ✅ | `docs/RELATORIO_TECNICO.md` §5 e `docs/FINETUNING.md` |
 | Relatório: descrição do assistente médico | ✅ | `docs/RELATORIO_TECNICO.md` §2 e §6–7 |
 | Relatório: diagrama do fluxo LangChain | ✅ | `docs/arquitetura.svg` / `docs/arquitetura.png` |
 | Relatório: avaliação do modelo e análise dos resultados | ✅ | `docs/AVALIACAO_FINAL.md`, `docs/RELATORIO_TECNICO.md` §8 |
-| Vídeo de até 15 min: treinamento e funcionamento da LLM | ⬜ | Roteiro pronto em `docs/ROTEIRO_VIDEO.md`; gravação pelo desenvolvedor |
-| Vídeo: execução de um fluxo automatizado | ⬜ | idem |
-| Vídeo: resposta a perguntas clínicas contextualizadas | ⬜ | idem |
-| Vídeo: logs e validação das respostas | ⬜ | idem |
+| Vídeo de até 15 min: treinamento e funcionamento da LLM | ✅ | [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI) (~13 min), roteiro em `docs/ROTEIRO_VIDEO.md` |
+| Vídeo: execução de um fluxo automatizado | ✅ | idem |
+| Vídeo: resposta a perguntas clínicas contextualizadas | ✅ | idem |
+| Vídeo: logs e validação das respostas | ✅ | idem |
 
 ## Outras observações do PDF
 
@@ -77,11 +77,11 @@ transcreve o requisito do PDF, e não a especificação interna (`docs/PROJECT_S
 - **Atendidos:** fine-tuning real, dados sintéticos com curadoria, contexto do paciente, RAG com
   fontes, LangGraph, limites de atuação, auditoria, explainability, modularização, README,
   relatório, diagrama e avaliação.
-- **Parciais (3):**
-  - modelos de laudos e receitas ausentes no dataset;
-  - a LLM customizada não está encapsulada como componente LangChain;
-  - a consulta SQL é feita sem componente LangChain.
-- **Pendente (1):** o vídeo.
+  A LLM customizada e a consulta ao SQLite passaram a ser componentes LangChain (antes eram
+  itens parciais).
+- **Parcial (1):** modelos de laudos e receitas ausentes no dataset. Incluí-los exigiria
+  retreinar o adaptador, o que invalidaria a avaliação final (execução única com protocolo
+  congelado). Fica como limitação documentada.
+- **Pendente:** nenhum. O vídeo está em [YouTube](https://www.youtube.com/watch?v=VpMtM8cumbI).
 
-**Conformidade não é de 100%.** Os itens parciais são decisões do desenvolvedor: aceitar e
-documentar, ou implementar antes da entrega. Ver "Pendências" no README.
+**Conformidade não é de 100%:** resta o item parcial acima. Ver "Pendências" no README.

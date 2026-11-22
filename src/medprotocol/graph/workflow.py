@@ -18,7 +18,10 @@ Grafo (arestas condicionais entre colchetes):
     registrar_auditoria ──► END
 
 Componentes reutilizados (nada é reimplementado):
-- banco: `repository.get_patient_summary` (Etapa 2);
+- banco: `repository.get_patient_summary` (Etapa 2), exposto como `RunnableLambda` LangChain
+  (`lc_components.build_patient_lookup`);
+- LLM: `LocalQwenGenerator` envolvido em `MedProtocolChatModel` (`BaseChatModel` LangChain) numa
+  cadeia LCEL `mensagens -> ChatModel -> StrOutputParser` (`lc_components.build_answer_chain`);
 - RAG: `ProtocolRetriever.retrieve` (Etapa 3);
 - política de seções v1 e mensagens: `assemble_context` e `build_messages` (Etapas 3–4),
   os mesmos usados para gerar os dados de treino.
@@ -36,11 +39,12 @@ from typing import Any, TypedDict
 from langgraph.graph import END, StateGraph
 
 from medprotocol.data import schedule
-from medprotocol.db.repository import PatientNotFoundError, RepositoryError, connect_readonly, get_patient_summary
+from medprotocol.db.repository import PatientNotFoundError, RepositoryError
 from medprotocol.finetuning.answer_metrics import cited_refs, PROTOCOL_RE
 from medprotocol.finetuning.context import AssistantContext, assemble_context
 from medprotocol.finetuning.messages import PROMPT_VERSION, build_messages
 from medprotocol.graph.audit import AuditLogger, text_digest
+from medprotocol.graph.lc_components import build_answer_chain, build_patient_lookup
 from medprotocol.graph.llm import GenerationError, ModelLoadError, TextGenerator
 from medprotocol.graph.validation import (
     ALTA,
@@ -146,6 +150,10 @@ def _timed(name: str, fn):
 
 
 def build_graph(deps: Dependencies):
+    # Componentes LangChain: consulta estruturada (SQLite) e LLM customizada (Qwen2.5 + LoRA).
+    patient_lookup = build_patient_lookup(deps.db_path, deps.reference_date)
+    answer_chain = build_answer_chain(deps.generator)
+
     def interpretar(state: GraphState) -> GraphState:
         pergunta = state["pergunta"].strip()
         analysis = analyze_question(pergunta)
@@ -161,8 +169,7 @@ def build_graph(deps: Dependencies):
     def consultar_paciente(state: GraphState) -> GraphState:
         patient_id = state["patient_id"]
         try:
-            with connect_readonly(deps.db_path) as conn:
-                return {"paciente": get_patient_summary(conn, patient_id, deps.reference_date)}
+            return {"paciente": patient_lookup.invoke(patient_id)}
         except PatientNotFoundError:
             return {
                 "status": EVIDENCIA_INSUFICIENTE,
@@ -193,7 +200,7 @@ def build_graph(deps: Dependencies):
 
     def gerar_resposta(state: GraphState) -> GraphState:
         try:
-            return {"resposta_modelo": deps.generator.generate(state["mensagens"])}
+            return {"resposta_modelo": answer_chain.invoke(state["mensagens"])}
         except (ModelLoadError, GenerationError) as exc:
             logger.error("falha do modelo: %s", exc)
             return {"status": ERRO, "erro": str(exc), "resposta": "O modelo de linguagem não está disponível. Nenhuma resposta foi gerada."}

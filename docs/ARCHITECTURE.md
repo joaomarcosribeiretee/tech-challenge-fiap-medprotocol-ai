@@ -57,6 +57,16 @@ validar_resposta ─────────────────────
 `recuperacao`, `contexto`, `mensagens`, `resposta_modelo`, `resposta`, `alertas`, `status`,
 `erro` e `tempos_ms` por nó.
 
+**Componentes LangChain nos nós** (`lc_components.py`):
+- `consultar_paciente` → `build_patient_lookup`: `RunnableLambda` sobre `get_patient_summary`
+  (SQLite somente leitura);
+- `gerar_resposta` → `build_answer_chain`: `RunnableLambda(dict → mensagens LangChain)` |
+  `MedProtocolChatModel` (`BaseChatModel` sobre o `LocalQwenGenerator`) | `StrOutputParser`.
+- As exceções (`PatientNotFoundError`, `ModelLoadError`, `GenerationError`...) atravessam os
+  Runnables sem mudar de tipo, então o tratamento de erro do grafo é o mesmo.
+- A conversão de mensagens é exata, e o prompt não mudou: as 16 respostas de
+  `reports/graph/demo_*.jsonl`, regeradas na GPU depois da mudança, ficaram idênticas.
+
 **Atalhos que evitam chamar o modelo:**
 - paciente inexistente;
 - mais de um paciente na pergunta;

@@ -49,7 +49,7 @@ exemplo é verificar exames pendentes e emitir alertas.
 | Recuperação | LangChain (`InMemoryVectorStore`, `HuggingFaceEmbeddings`) + `multilingual-e5-small` | `src/medprotocol/rag/` |
 | Dados estruturados | SQLite (somente leitura na inferência) | `src/medprotocol/db/` |
 | Contexto | Política de seções v1 + prompt v3 (os mesmos do treino) | `src/medprotocol/finetuning/context*.py`, `messages.py` |
-| LLM | Qwen2.5-1.5B-Instruct + adaptador LoRA, local, GPU | `src/medprotocol/graph/llm.py` |
+| LLM | Qwen2.5-1.5B-Instruct + adaptador LoRA, local, GPU, exposto como `BaseChatModel` LangChain | `src/medprotocol/graph/llm.py`, `lc_components.py` |
 | Validação | Regras determinísticas, sem LLM | `src/medprotocol/graph/validation.py` |
 | Auditoria | JSONL, texto só como hash | `src/medprotocol/graph/audit.py` |
 | Avaliação | Métricas em 3 níveis | `src/medprotocol/evaluation/`, `scripts/evaluate_final.py` |
@@ -145,6 +145,12 @@ Evidências: `reports/finetune/qwen2.5-1.5b-lora-v1/`, `docs/FINETUNING.md`.
 - Arestas condicionais criam atalhos que **não chamam o LLM**: pergunta vazia, mais de um
   paciente, paciente inexistente, nenhuma evidência confiável. Falhas de banco ou modelo viram
   status `erro`, sem derrubar o processo.
+- Componentes LangChain nos nós (`src/medprotocol/graph/lc_components.py`):
+  - `consultar_paciente` invoca um `RunnableLambda` que lê o SQLite em modo somente leitura;
+  - `gerar_resposta` invoca a cadeia LCEL `mensagens → MedProtocolChatModel → StrOutputParser`.
+    `MedProtocolChatModel` é um `BaseChatModel` sobre o Qwen2.5 + LoRA.
+  - A mudança não alterou o prompt: as 16 respostas da demonstração (`reports/graph/demo_*.jsonl`),
+    regeradas na GPU depois dela, ficaram idênticas.
 
 **Validação (sem LLM):**
 - Confere o texto gerado contra o contexto: IDs de exames de outro paciente, exame ou valor
@@ -233,7 +239,6 @@ Resultados completos e limitações: `docs/AVALIACAO_FINAL.md`, `reports/eval_fi
   - não trata negação ("não oferecer… via oral");
   - associa valores a exames por janela de texto.
 - **Não há modelos de laudos e receitas** no dataset (ver checklist).
-- **A LLM e o SQLite entram pelo LangGraph,** sem wrappers LangChain.
 - **Auditoria em arquivo local,** sem rotação nem controle de acesso; interface sem autenticação
   (restrita a `localhost`).
 - **Um ambiente testado:** Windows 11 + RTX 4070. Não foi testado em Linux nem em outras GPUs.
@@ -248,11 +253,9 @@ Resultados completos e limitações: `docs/AVALIACAO_FINAL.md`, `reports/eval_fi
    - tratar negação e imperativos;
    - checar coerência de status contra o resumo do paciente (a informação já existe no SQLite);
    - medir precisão e recall das regras num conjunto rotulado.
-4. **Encapsular o gerador como `ChatModel` LangChain** e expor a consulta ao SQLite como
-   ferramenta, sem mudar o comportamento.
-5. **Incluir modelos de laudos e de procedimentos** no dataset; receitas, apenas como documentos
+4. **Incluir modelos de laudos e de procedimentos** no dataset; receitas, apenas como documentos
    a explicar, nunca a gerar.
-6. **Comparar com um modelo maior** (3–8 B, com QLoRA) para separar o efeito do tamanho do efeito
+5. **Comparar com um modelo maior** (3–8 B, com QLoRA) para separar o efeito do tamanho do efeito
    do fine-tuning.
 
 ## 11. Conclusão
@@ -280,4 +283,4 @@ sistema dispensa o médico responsável.
 ## Reprodutibilidade
 
 Os comandos de cada etapa estão no `README.md`. Versões em `constraints-train.txt` e
-`constraints-rag.txt`. Testes: 244 (`python -m pytest` no `.venv-train`).
+`constraints-rag.txt`. Testes: 254 (`python -m pytest` no `.venv-train`).
