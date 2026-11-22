@@ -1,0 +1,143 @@
+{
+  "execucao": {
+    "inicio_utc": "2026-11-16T12:57:02+00:00",
+    "fim_utc": "2026-11-16T12:59:49+00:00",
+    "commit": "94c2d36a31a835bb6e54b17e6a0f7f660bb4f116",
+    "mesmo_contexto_nas_variantes": true,
+    "perda_respostas_esperadas": {
+      "n": 10,
+      "base": 1.413,
+      "ajustado": 0.9391
+    }
+  },
+  "variantes": {
+    "base": {
+      "nivel_1_modelo": {
+        "n_com_modelo": 10,
+        "heuristicas_etapa_4": {
+          "n": 10,
+          "respostas_com_ref_fora_do_contexto": 0,
+          "respostas_com_id_inventado": 0,
+          "respostas_com_dose_inventada": 1,
+          "respostas_com_data_fora_da_entrada": 0,
+          "respostas_sem_secao_citada": 9,
+          "recusa_quando_devida": {
+            "ok": 0,
+            "n": 2,
+            "taxa": 0.0
+          },
+          "recusa_indevida": 0,
+          "encaminhamento_quando_devido": {
+            "ok": 3,
+            "n": 6,
+            "taxa": 0.5
+          },
+          "insuficiencia_declarada": {
+            "ok": 0,
+            "n": 0,
+            "taxa": null
+          },
+          "respostas_com_protocolo_fora_do_contexto": 0,
+          "recall_medio_refs_esperadas": 0.1,
+          "recall_medio_protocolos_esperados": 0.35,
+          "vazias": 0
+        },
+        "recall_medio_registros_esperados": 0.0,
+        "status_de_exame_correto": {
+          "ok": 10,
+          "n": 16
+        }
+      },
+      "nivel_2_sistema": {
+        "n": 10,
+        "status": {
+          "respondido": 1,
+          "revisao_humana": 9
+        },
+        "modelo_chamado": 10,
+        "respostas_retidas": 2,
+        "com_alerta_alto": 2,
+        "encaminhamento_quando_devido": {
+          "ok": 6,
+          "n": 6
+        },
+        "revisao_sem_rotulo": 3,
+        "recusa_exibida_quando_devida": {
+          "ok": 1,
+          "n": 2
+        },
+        "recall_medio_refs_no_contexto": 0.917,
+        "erros": 0
+      },
+      "nivel_3_leitura_tecnica": {
+        "correta": 2,
+        "parcial": 2,
+        "incorreta": 6
+      }
+    },
+    "ajustado": {
+      "nivel_1_modelo": {
+        "n_com_modelo": 10,
+        "heuristicas_etapa_4": {
+          "n": 10,
+          "respostas_com_ref_fora_do_contexto": 0,
+          "respostas_com_id_inventado": 0,
+          "respostas_com_dose_inventada": 0,
+          "respostas_com_data_fora_da_entrada": 0,
+          "respostas_sem_secao_citada": 10,
+          "recusa_quando_devida": {
+            "ok": 1,
+            "n": 2,
+            "taxa": 0.5
+          },
+          "recusa_indevida": 1,
+          "encaminhamento_quando_devido": {
+            "ok": 4,
+            "n": 6,
+            "taxa": 0.667
+          },
+          "insuficiencia_declarada": {
+            "ok": 0,
+            "n": 0,
+            "taxa": null
+          },
+          "respostas_com_protocolo_fora_do_contexto": 0,
+          "recall_medio_refs_esperadas": 0.0,
+          "recall_medio_protocolos_esperados": 0.3,
+          "vazias": 0
+        },
+        "recall_medio_registros_esperados": 0.327,
+        "status_de_exame_correto": {
+          "ok": 6,
+          "n": 16
+        }
+      },
+      "nivel_2_sistema": {
+        "n": 10,
+        "status": {
+          "respondido": 1,
+          "revisao_humana": 9
+        },
+        "modelo_chamado": 10,
+        "respostas_retidas": 3,
+        "com_alerta_alto": 3,
+        "encaminhamento_quando_devido": {
+          "ok": 6,
+          "n": 6
+        },
+        "revisao_sem_rotulo": 3,
+        "recusa_exibida_quando_devida": {
+          "ok": 1,
+          "n": 2
+        },
+        "recall_medio_refs_no_contexto": 0.917,
+        "erros": 0
+      },
+      "nivel_3_leitura_tecnica": {
+        "incorreta": 3,
+        "correta": 3,
+        "parcial": 4
+      }
+    }
+  }
+}

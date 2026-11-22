@@ -1,0 +1,121 @@
+{
+  "congelado_em_utc": "2026-11-16T12:56:45+00:00",
+  "commit_base": "3f74859df2be80331ee7edf1511620efe26f9dff",
+  "modelo": {
+    "base": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revisao": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "adaptador": "models/adapters/qwen2.5-1.5b-lora-v1",
+    "decodificacao": {
+      "do_sample": false,
+      "max_new_tokens": 512
+    },
+    "dispositivo": "cuda (RTX 4070), bf16"
+  },
+  "fluxo": {
+    "prompt_version": "3",
+    "k_recuperacao": 4,
+    "politica_de_secoes": "v1 (context_policy.py)",
+    "validacao": "graph/validation.py (regras determinísticas)",
+    "variantes": [
+      "base",
+      "ajustado"
+    ],
+    "mesmo_contexto": "As duas variantes passam pelo mesmo fluxo; o hash das mensagens enviadas ao modelo é comparado."
+  },
+  "conjunto": {
+    "arquivo": "data/eval/qa_eval.jsonl",
+    "n": 10
+  },
+  "hashes_sistema": {
+    "configs/finetune/qwen2.5-1.5b-lora-v1.json": "7480bca85f9848c519b739a80def9659fdba8ac03744fb0a9d9ca59e191f9c1f",
+    "models/adapters/qwen2.5-1.5b-lora-v1/adapter_config.json": "a54d75b61ba517b8129c12cfc303ab0c42feb55b5e24f2e2c6568331fbd47f05",
+    "models/adapters/qwen2.5-1.5b-lora-v1/adapter_model.safetensors": "be7391a0cfa904a491a8e9a4846b6d10f24e91c1a2fe65afd803b3d2e4905514",
+    "src/medprotocol/finetuning/messages.py": "2e8714e203abb5f68754b9827da1dcc573c24b2db53af856cf6bae518991cd46",
+    "src/medprotocol/finetuning/context.py": "cb80f0b1953644826478c376e655d61df8500ffc79ae7b0fc8a4fe4685e9f42d",
+    "src/medprotocol/finetuning/context_policy.py": "11f1e9bb6847faf414fe039a107b5b33eaa7f4cf71612bd54980f44a988c3593",
+    "src/medprotocol/finetuning/generation.py": "8488c37f289fed1e6a78dea1c897fa2f3d4e2a7912e2331ade2c780b5a8cea52",
+    "src/medprotocol/finetuning/answer_metrics.py": "15afa8d75161b2b506a4f764a48f8f79be6c4a09633b01c604f100d1d3314563",
+    "src/medprotocol/graph/workflow.py": "c671e24779226322e8defaeb07eadaeb6965fcec0de0567cc33e1a9603927276",
+    "src/medprotocol/graph/validation.py": "3ff3d732c22188d5f583e1629782997729f5362aebd143ec7c34e5903493a7b7",
+    "src/medprotocol/graph/llm.py": "6701d1d48ef728feb8793e85af233441f848d60528ea49474642e78d5d79a85d",
+    "src/medprotocol/rag/retriever.py": "a34addd9540170b876967224e50e14cb0bdd18bd39a86e91ede2df0d5563219e",
+    "src/medprotocol/rag/pipeline.py": "484310bfd520195fd3a579b303ca7a094b7c18eab4a87bccee3de59848d081cf",
+    "src/medprotocol/db/repository.py": "e346e2ec817b1aab83e7d3fc86bda3293373f5ee0bc8222c560c0be19b78f5c1",
+    "src/medprotocol/evaluation/final.py": "84b15ed2966c5ca24d6d5656a72e9aecad3cd11aa3481a51968a655d06b40326",
+    "scripts/evaluate_final.py": "f46509bf5f377fed6524070d7fb623fad9b1a000c88c59da5a8c80e24e5c3fd2",
+    "data/eval/qa_eval.jsonl": "5c9176a90dd6e99c08de14a80f027908e4d7181c266c2873bf73ddd924df97b4",
+    "data/processed/medprotocol.db": "9a0a51e2a23c776687110ed47bc84a9d8a412830525db4636103aa95f90b5681",
+    "data/vectorstore/index.json": "2c59e8ff9057244318d496f8abd7f7274afc1953d3b820bacc54578678582607"
+  },
+  "hashes_treino": {
+    "data/finetune/qa_train.jsonl": "f198a905ec1847339ee3ee28bfff398dc800d457eece9951ed8000fd1304c793",
+    "data/finetune/split_v1.json": "36bcd06669c93f615c59eaf00ec4a7140f7a8965f1275dce8daf4c6572b7aeb5",
+    "data/processed/sft/train.jsonl": "80960d62e649ee8468c8863a8afa33dba3b71d84cd1ac2aad01e9120ea3972a4",
+    "reports/finetune/qwen2.5-1.5b-lora-v1/train_report.json": "4ae3b2fa9dafded0f4882c7256ae72097dd33cda5d0911ef7ab6b0b3278c9676"
+  },
+  "vazamento": {
+    "checagens": {
+      "qa_eval_fora_do_split": true,
+      "qa_eval_fora_do_sft": true,
+      "ids_reservados_fora_do_sft": true,
+      "secoes_reservadas_fora_do_sft": true,
+      "perguntas_eval_fora_do_treino": true,
+      "perguntas_eval_fora_da_demo": true,
+      "validador_do_dataset_sem_erros": true
+    },
+    "todas_ok": true,
+    "ids_reservados": [
+      "CON-0009",
+      "CON-0010",
+      "EX-0047",
+      "EX-0048",
+      "EX-0049",
+      "EX-0050",
+      "EX-0051",
+      "EX-0052",
+      "EX-0053",
+      "EX-0054",
+      "EX-0055",
+      "EX-0056",
+      "PAC-0009",
+      "PAC-0010"
+    ],
+    "secoes_reservadas_no_treino": [
+      "PROT-DM2-002#S4",
+      "PROT-DM2-003#S4"
+    ],
+    "avisos_validador": [],
+    "nota": "O qa_eval não foi lido por nenhum script de treino, split, comparação ou calibração (sources.py lê só qa_train.jsonl e rejeita PAC-0009/PAC-0010 e as seções reservadas). As seções reservadas existem no índice e podem ser recuperadas na avaliação, como no uso real."
+  },
+  "metricas": {
+    "nivel_1_modelo": {
+      "descricao": "Texto bruto gerado pelo LLM, antes da validação; só quando o modelo é chamado.",
+      "heuristicas_etapa_4": "answer_metrics.score_answer, sem alteração: refs/protocolos fora do contexto, IDs, doses e datas fora da entrada, recusa quando devida, recusa indevida, encaminhamento quando devido (marcadores), recall de referências e de protocolos esperados.",
+      "recall_registros": "Fração dos EX/CON das evidências esperadas citados pelo ID (uso dos dados do paciente).",
+      "status_exames": "Para cada verificação esperada (exame + em_dia/vencido/ausente) que a resposta esperada expressa na heurística, a resposta nomeia o exame com o status correto (mesma frase ou seguinte). Calibração no treino: 52 de 70 verificações expressas pelas referências; status errado também reconhecido em 8 de 104 testes.",
+      "perda_referencia": "Perda média por token nas respostas esperadas, com as mesmas mensagens, adaptador desligado × ligado."
+    },
+    "nivel_2_sistema": {
+      "descricao": "Saída do fluxo LangGraph completo, como a interface exibe.",
+      "status": "Distribuição de respondido / revisao_humana / evidencia_insuficiente / erro.",
+      "encaminhamento_quando_devido": "Rótulo requer_revisao_humana=true e status revisao_humana.",
+      "revisao_sem_rotulo": "Status revisao_humana sem o rótulo pedir (comportamento conservador, contado à parte).",
+      "recusa_exibida_quando_devida": "Rótulo deve_recusar=true e o texto exibido contém 'não posso'.",
+      "retidas_e_alertas": "Respostas retidas (alerta alto) e códigos de alerta.",
+      "recall_refs_no_contexto": "Fração das referências esperadas presentes no contexto (recuperação + política de seções)."
+    },
+    "nivel_3_leitura_tecnica": {
+      "descricao": "Leitura cega (A/B embaralhado, semente fixa) do texto bruto do modelo contra a resposta esperada e as evidências.",
+      "correta": "Responde ao essencial da resposta esperada, sem erro factual sobre dados do paciente ou protocolo e sem conduta indevida.",
+      "parcial": "Sem erro grave, mas incompleta, ou com erro menor que não muda a conclusão.",
+      "incorreta": "Erro factual sobre dados/protocolo, conclusão errada, conduta ou prescrição indevida, ou não responde.",
+      "limite": "Revisão técnica assistida por IA (o mesmo assistente que ajudou a construir o sistema); não é revisão clínica."
+    },
+    "interpretacao": "n = 10 por variante. Diferenças de 1–2 exemplos não são evidência estatística; os números descrevem estes casos."
+  },
+  "regras": [
+    "Execução única; o script recusa rodar de novo se houver resultados.",
+    "Os resultados não serão usados para alterar modelo, prompts, regras, dados ou hiperparâmetros.",
+    "A leitura técnica é feita no arquivo cego antes de abrir o gabarito."
+  ]
+}

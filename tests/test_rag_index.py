@@ -12,7 +12,7 @@ from langchain_core.embeddings import DeterministicFakeEmbedding  # noqa: E402
 
 from medprotocol.data.loaders import load_dataset  # noqa: E402
 from medprotocol.data.validation import text_similarity  # noqa: E402
-from medprotocol.rag.evaluation import calibrate, load_dev_queries, metrics, QueryOutcome  # noqa: E402
+from medprotocol.rag.evaluation import calibrate, load_dev_queries, metrics, QueryOutcome, status_counts  # noqa: E402
 from medprotocol.rag.index import MANIFEST_FILE, build_index, compute_manifest, load_or_build_index  # noqa: E402
 from medprotocol.rag.retriever import (  # noqa: E402
     STATUS_NO_RELIABLE,
@@ -162,6 +162,16 @@ def test_metrics_hit_and_mrr():
     assert result["hit@1"] == 0.5 and result["hit@3"] == 1.0
     assert result["mrr"] == pytest.approx((1 + 1 / 3) / 2)
     assert result["rejeicao_fora"] == 1.0
+
+
+def test_status_counts_separate_uncertain_from_no_reliable():
+    data = [outcome("a", "fora", 0.5), outcome("b", "fora", 0.7), outcome("c", "fora", 0.9), outcome("d", "dentro", 0.9)]
+    assert status_counts(data, "fora", lower=0.6, upper=0.8) == {
+        STATUS_OK: 1,
+        STATUS_UNCERTAIN: 1,
+        STATUS_NO_RELIABLE: 1,
+    }
+    assert metrics(data, lower=0.6, upper=0.8)["rejeicao_fora"] == pytest.approx(2 / 3)  # inclui "incerto"
 
 
 def test_dev_queries_reference_real_sections():

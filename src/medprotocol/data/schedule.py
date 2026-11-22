@@ -23,6 +23,22 @@ HBA1C_TARGET = 7.0
 MONITORED_EXAMS = ("HBA1C", "CREATININA", "TFG", "RAC", "LDL")
 _FIXED_INTERVAL_DAYS = {"CREATININA": 365, "TFG": 365, "RAC": 365, "LDL": 365}
 
+# Seção de origem de cada regra deste módulo (rastreabilidade das verificações calculadas).
+STATUS_SECTION = "PROT-DM2-001#S4"  # em_dia / vencido / ausente; valores nunca estimados
+INTERVAL_SECTIONS = {
+    "HBA1C": "PROT-DM2-001#S3",
+    "CREATININA": "PROT-DM2-001#S3",
+    "TFG": "PROT-DM2-001#S3",
+    "RAC": "PROT-DM2-003#S3",
+    "LDL": "PROT-DM2-001#S3",
+}
+LIMIT_SECTIONS = {
+    "HBA1C": "PROT-DM2-001#S3",
+    "TFG": "PROT-DM2-003#S3",
+    "RAC": "PROT-DM2-003#S3",
+    "LDL": "PROT-DM2-001#S3",
+}
+
 
 def interval_days(exam_type: str, value: float) -> int:
     if exam_type == "HBA1C":

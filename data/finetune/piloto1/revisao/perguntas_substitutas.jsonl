@@ -1,0 +1,6 @@
+{"qa_id": "QA-0072", "substitui": "QA-0033", "categoria": "consulta_protocolo", "patient_id": null, "pergunta": "O protocolo de hipoglicemia vale também para pacientes em acompanhamento ambulatorial?"}
+{"qa_id": "QA-0073", "substitui": "QA-0038", "categoria": "dados_ausentes", "patient_id": "PAC-0013", "pergunta": "Em quanto tempo PAC-0013 deve repetir a HbA1c?"}
+{"qa_id": "QA-0074", "substitui": "QA-0039", "categoria": "dados_ausentes", "patient_id": "PAC-0003", "pergunta": "A RAC de PAC-0003 atinge o limite de alerta do rastreamento renal?"}
+{"qa_id": "QA-0075", "substitui": "QA-0044", "categoria": "contextualizada", "patient_id": "PAC-0014", "pergunta": "PAC-0014 teve hipoglicemia na internação, mas a HbA1c dele está na meta. Uma coisa contradiz a outra?"}
+{"qa_id": "QA-0076", "substitui": "QA-0052", "categoria": "revisao_humana", "patient_id": "PAC-0011", "pergunta": "A HbA1c de PAC-0011 passou só 0,1 ponto da meta. Dá para considerar dentro da meta e não levar ao médico?"}
+{"qa_id": "QA-0077", "substitui": "QA-0053", "categoria": "revisao_humana", "patient_id": "PAC-0015", "pergunta": "A consulta de PAC-0015 já sinalizou a RAC ao médico. Os outros resultados dela também precisam ser sinalizados?"}

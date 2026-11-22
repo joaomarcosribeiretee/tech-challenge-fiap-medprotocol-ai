@@ -8,8 +8,14 @@
 | `build_index.py` | Reconstrói o índice vetorial dos protocolos em `data/vectorstore/` (extra `rag`). |
 | `search_protocols.py "pergunta"` | Mostra os trechos recuperados, referências, scores e status (sem LLM). |
 | `evaluate_retrieval.py` | Hit@1, Hit@3, MRR e calibração de limiares no conjunto de desenvolvimento (nunca no `qa_eval`). |
-
-Previsto: montar datasets de fine-tuning a partir de `data/finetune/`.
+| `build_sft_dataset.py` | Gera `data/processed/sft/train.jsonl` (mensagens com contexto RAG + regras determinísticas + SQLite) a partir de `qa_train.jsonl` e reporta status, cobertura e fundamentação das referências; `--strict` falha se houver lacunas. Veja `docs/FINETUNING_DATA.md`. |
+| `split_sft_dataset.py` | Gera `data/finetune/split_v1.json` (IDs de treino/validação), sem paciente nos dois lados e sem quase-duplicatas entre os lados. Determinístico. |
+| `train_lora.py --config ... [--smoke]` | Treina o adaptador LoRA (ambiente `.venv-train`, GPU). Grava o adaptador em `models/adapters/` (não versionado) e o relatório em `reports/finetune/`. Veja `docs/FINETUNING.md`. |
+| `compare_models.py --config ... [--rescore]` | Gera respostas do modelo base e do ajustado com o mesmo contexto na validação, calcula as métricas heurísticas e a perda. `--rescore` recalcula sem GPU. |
+| `ask.py "pergunta" [--variant base] [--file f.txt --out f.jsonl]` | Executa o fluxo LangGraph completo (`.venv-train`) e imprime a saída estruturada. Veja `docs/ARCHITECTURE.md`. |
+| `ui_e2e.py [--variants ajustado base] [--out f.jsonl]` | Teste de ponta a ponta da interface Streamlit com o fluxo real (`.venv-train`, GPU): preenche o formulário, envia e registra o que a tela exibiu. Veja `docs/ARCHITECTURE.md` §8. |
+| `validate_generations.py` | Aplica a validação do fluxo às respostas salvas da Etapa 4 e compara com a leitura manual (sem GPU). |
+| `preregister_context.py perguntas.jsonl --out arquivo.json` | Registra, antes de existirem respostas, os trechos e as seções por regra que a política congelada seleciona para um lote de perguntas (lê só `qa_id`, `pergunta` e `patient_id`). Grava versões e o SHA-256 da política. |
 
 ## Convenções
 

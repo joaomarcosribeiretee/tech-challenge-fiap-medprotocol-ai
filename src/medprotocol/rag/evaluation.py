@@ -2,7 +2,8 @@
 
 Métricas (perguntas do escopo): Hit@1, Hit@3 e MRR, considerando acerto quando qualquer
 uma das `refs_esperadas` aparece. Perguntas fora do escopo: taxa de rejeição (status
-diferente de "ok").
+diferente de "ok"). Essa taxa inclui "incerto", que não é rejeição definitiva; por isso a
+distribuição por status (`status_counts`) é sempre reportada junto.
 
 Calibração dos limiares (apenas com o conjunto de desenvolvimento):
 - lower = menor "melhor score" entre perguntas do escopo;
@@ -92,6 +93,17 @@ def calibrate(outcomes: list[QueryOutcome]) -> Calibration:
         middle = round((low + high) / 2, 4)
         return Calibration(middle, middle, True, low, high)
     return Calibration(_round_down(low), _round_above(high), False, low, high)
+
+
+def status_counts(outcomes: list[QueryOutcome], escopo: str, lower: float, upper: float) -> dict[str, int]:
+    """Quantas perguntas de um escopo caíram em cada status ("incerto" não é rejeição definitiva)."""
+    from medprotocol.rag.retriever import STATUS_NO_RELIABLE, STATUS_OK, STATUS_UNCERTAIN, classify
+
+    counts = {STATUS_OK: 0, STATUS_UNCERTAIN: 0, STATUS_NO_RELIABLE: 0}
+    for o in outcomes:
+        if o.escopo == escopo:
+            counts[classify(o.top_score, lower, upper)] += 1
+    return counts
 
 
 def metrics(outcomes: list[QueryOutcome], lower: float, upper: float) -> dict[str, float]:

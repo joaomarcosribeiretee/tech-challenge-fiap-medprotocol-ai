@@ -1,0 +1,24 @@
+# Versões efetivamente testadas da Etapa 3 (RAG) — Python 3.14.4, Windows, só CPU.
+# Os limiares de confiança em src/medprotocol/rag/retriever.py foram calibrados com estas
+# versões; outras versões podem mudar os scores na 4ª casa decimal.
+#
+# Uso (reprodução exata):
+#   python -m pip install -e ".[dev,rag]" -c constraints-rag.txt
+#
+# O pyproject.toml continua com faixas de versão; este arquivo só fixa o ambiente testado.
+langchain-core==1.7.1
+langchain-huggingface==1.2.3
+sentence-transformers==6.2.0
+transformers==5.21.1
+tokenizers==0.23.3
+huggingface_hub==1.33.0
+safetensors==0.8.0
+torch==2.15.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+pydantic==2.14.1
+langsmith==0.14.14
+pytest==9.2.0
+# Etapa 5 (fluxo LangGraph)
+langgraph==1.2.22

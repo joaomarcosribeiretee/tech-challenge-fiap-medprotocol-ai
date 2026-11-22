@@ -1,0 +1,11 @@
+{
+  "inicio_utc": "2026-11-16T12:57:02+00:00",
+  "fim_utc": "2026-11-16T12:59:49+00:00",
+  "commit": "94c2d36a31a835bb6e54b17e6a0f7f660bb4f116",
+  "mesmo_contexto_nas_variantes": true,
+  "perda_respostas_esperadas": {
+    "n": 10,
+    "base": 1.413,
+    "ajustado": 0.9391
+  }
+}

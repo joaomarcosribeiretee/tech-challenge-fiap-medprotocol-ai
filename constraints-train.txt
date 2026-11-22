@@ -1,0 +1,32 @@
+# Versões efetivamente usadas no treino da Etapa 4 — Python 3.14.4, Windows 11, RTX 4070 (CUDA 13.0).
+#
+# Ambiente separado do RAG (o .venv do RAG continua com torch CPU, cujos limiares foram calibrados):
+#   py -3.14 -m venv .venv-train
+#   .venv-train\Scripts\python -m pip install torch==2.14.1+cu130 --index-url https://download.pytorch.org/whl/cu130
+#   .venv-train\Scripts\python -m pip install -e ".[dev,train,rag,graph]" -c constraints-train.txt
+#
+# O .venv-train é também o ambiente de execução do fluxo LangGraph com o modelo real (Etapa 5):
+# a recuperação dá resultados idênticos aos do .venv (91 consultas, diferença de score 0,0),
+# porque os embeddings rodam em CPU nos dois.
+torch==2.14.1+cu130
+transformers==5.21.1
+tokenizers==0.23.3
+huggingface_hub==1.33.0
+safetensors==0.8.0
+peft==0.21.3
+accelerate==1.15.0
+numpy==2.5.4
+pytest==9.2.0
+# Etapa 5 (fluxo LangGraph)
+langgraph==1.2.22
+langchain-core==1.7.1
+langchain-huggingface==1.2.3
+sentence-transformers==6.2.0
+scipy==1.18.1
+scikit-learn==1.9.1
+# Etapa 6 (interface Streamlit) e principais dependências que ela instala
+streamlit==1.67.0
+pandas==3.1.1
+pyarrow==26.0.1
+altair==6.3.0
+protobuf==7.36.2

@@ -14,6 +14,7 @@ from pathlib import Path
 
 VALID_APP_ENVS = frozenset({"dev", "test", "prod"})
 VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"})
+VALID_MODEL_VARIANTS = frozenset({"ajustado", "base"})
 
 
 @dataclass(frozen=True)
@@ -25,11 +26,14 @@ class Settings:
     vectorstore_dir: Path
     base_model_name: str
     adapter_dir: Path
+    model_config: Path = Path("configs/finetune/qwen2.5-1.5b-lora-v1.json")
+    model_variant: str = "ajustado"
+    audit_log_path: Path = Path("logs/audit.jsonl")
 
 
 def _choice(env: Mapping[str, str], key: str, default: str, valid: frozenset[str]) -> str:
     value = env.get(key, default).strip()
-    if key == "LOG_LEVEL":
+    if key in ("LOG_LEVEL",):
         value = value.upper()
     if value not in valid:
         raise ValueError(f"{key}={value!r} inválido. Valores aceitos: {sorted(valid)}")
@@ -47,4 +51,7 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         vectorstore_dir=Path(env.get("VECTORSTORE_DIR", "data/vectorstore")),
         base_model_name=env.get("BASE_MODEL_NAME", ""),
         adapter_dir=Path(env.get("ADAPTER_DIR", "models/adapters")),
+        model_config=Path(env.get("MODEL_CONFIG", "configs/finetune/qwen2.5-1.5b-lora-v1.json")),
+        model_variant=_choice(env, "MODEL_VARIANT", "ajustado", VALID_MODEL_VARIANTS),
+        audit_log_path=Path(env.get("AUDIT_LOG_PATH", "logs/audit.jsonl")),
     )

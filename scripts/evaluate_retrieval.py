@@ -15,9 +15,22 @@ import sys
 from pathlib import Path
 
 from medprotocol.config import load_settings
-from medprotocol.rag.evaluation import calibrate, load_dev_queries, metrics, rank_queries
+from medprotocol.rag.evaluation import QueryOutcome, calibrate, load_dev_queries, metrics, rank_queries, status_counts
 from medprotocol.rag.pipeline import load_protocol_retriever
 from medprotocol.rag.retriever import classify
+
+METRIC_LABELS = {"rejeicao_fora": "rejeicao_fora (status != ok; inclui 'incerto')"}
+
+
+def print_metrics(outcomes: list[QueryOutcome], lower: float, upper: float) -> None:
+    for name, value in metrics(outcomes, lower, upper).items():
+        label = METRIC_LABELS.get(name, name)
+        print(f"  {label}: {value:.3f}" if isinstance(value, float) else f"  {label}: {value}")
+    for escopo in ("fora", "dentro"):
+        counts = status_counts(outcomes, escopo, lower, upper)
+        total = sum(counts.values())
+        detail = " · ".join(f"{status}={count}/{total}" for status, count in counts.items())
+        print(f"  status ({escopo} do escopo): {detail}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -39,8 +52,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     print(f"\nMétricas (limiares configurados lower={lower}, upper={upper}):")
-    for name, value in metrics(outcomes, lower, upper).items():
-        print(f"  {name}: {value:.3f}" if isinstance(value, float) else f"  {name}: {value}")
+    print_metrics(outcomes, lower, upper)
 
     cal = calibrate(outcomes)
     print("\nCalibração sugerida (somente conjunto de desenvolvimento):")
@@ -51,8 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(f"  SOBREPOSIÇÃO -> faixa 'incerto' [{cal.lower}, {cal.upper})")
     print("\nMétricas com a calibração sugerida:")
-    for name, value in metrics(outcomes, cal.lower, cal.upper).items():
-        print(f"  {name}: {value:.3f}" if isinstance(value, float) else f"  {name}: {value}")
+    print_metrics(outcomes, cal.lower, cal.upper)
     return 0
 
 

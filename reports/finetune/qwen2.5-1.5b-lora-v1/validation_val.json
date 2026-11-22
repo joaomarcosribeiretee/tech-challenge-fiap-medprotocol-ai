@@ -1,0 +1,333 @@
+{
+  "resumo": {
+    "base/correta": {
+      "com_alerta": 1,
+      "sem_alerta": 3,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 1,
+      "status:revisao_humana": 3,
+      "status:revisao_humana (retida)": 0
+    },
+    "base/parcial": {
+      "com_alerta": 2,
+      "sem_alerta": 3,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 1,
+      "status:revisao_humana": 4,
+      "status:revisao_humana (retida)": 0
+    },
+    "base/incorreta": {
+      "com_alerta": 1,
+      "sem_alerta": 3,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 2,
+      "status:revisao_humana": 2,
+      "status:revisao_humana (retida)": 0
+    },
+    "ajustado/correta": {
+      "com_alerta": 1,
+      "sem_alerta": 0,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 0,
+      "status:revisao_humana": 1,
+      "status:revisao_humana (retida)": 0
+    },
+    "ajustado/parcial": {
+      "com_alerta": 5,
+      "sem_alerta": 2,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 2,
+      "status:revisao_humana": 4,
+      "status:revisao_humana (retida)": 1
+    },
+    "ajustado/incorreta": {
+      "com_alerta": 4,
+      "sem_alerta": 1,
+      "status:respondido": 0,
+      "status:evidencia_insuficiente": 1,
+      "status:revisao_humana": 3,
+      "status:revisao_humana (retida)": 1
+    }
+  },
+  "itens": [
+    {
+      "qa_id": "QA-0005",
+      "base": {
+        "leitura_manual": "parcial",
+        "alertas": [],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": false,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "incorreta",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0006",
+      "base": {
+        "leitura_manual": "parcial",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      },
+      "ajustado": {
+        "leitura_manual": "incorreta",
+        "alertas": [
+          "media:data_fora_do_contexto",
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0014",
+      "base": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "alta:exame_trocado",
+          "media:data_fora_do_contexto"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana (retida)"
+      }
+    },
+    {
+      "qa_id": "QA-0032",
+      "base": {
+        "leitura_manual": "incorreta",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      },
+      "ajustado": {
+        "leitura_manual": "incorreta",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      }
+    },
+    {
+      "qa_id": "QA-0042",
+      "base": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0045",
+      "base": {
+        "leitura_manual": "incorreta",
+        "alertas": [
+          "media:data_fora_do_contexto"
+        ],
+        "gatilhos_de_revisao": [],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      }
+    },
+    {
+      "qa_id": "QA-0056",
+      "base": {
+        "leitura_manual": "correta",
+        "alertas": [],
+        "gatilhos_de_revisao": [
+          "pedido_de_conduta"
+        ],
+        "sinalizada": false,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:fonte_externa"
+        ],
+        "gatilhos_de_revisao": [
+          "pedido_de_conduta"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0063",
+      "base": {
+        "leitura_manual": "correta",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      },
+      "ajustado": {
+        "leitura_manual": "incorreta",
+        "alertas": [
+          "alta:conduta_incompativel_com_condicao"
+        ],
+        "gatilhos_de_revisao": [],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana (retida)"
+      }
+    },
+    {
+      "qa_id": "QA-0065",
+      "base": {
+        "leitura_manual": "correta",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      }
+    },
+    {
+      "qa_id": "QA-0070",
+      "base": {
+        "leitura_manual": "correta",
+        "alertas": [],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": false,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "correta",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0071",
+      "base": {
+        "leitura_manual": "incorreta",
+        "alertas": [],
+        "gatilhos_de_revisao": [],
+        "sinalizada": false,
+        "status_do_fluxo": "evidencia_insuficiente"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:sem_fonte_citada"
+        ],
+        "gatilhos_de_revisao": [],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0074",
+      "base": {
+        "leitura_manual": "parcial",
+        "alertas": [],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": false,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "incorreta",
+        "alertas": [
+          "media:acao_sem_registro"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    },
+    {
+      "qa_id": "QA-0076",
+      "base": {
+        "leitura_manual": "incorreta",
+        "alertas": [],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": false,
+        "status_do_fluxo": "revisao_humana"
+      },
+      "ajustado": {
+        "leitura_manual": "parcial",
+        "alertas": [
+          "media:acao_sem_registro"
+        ],
+        "gatilhos_de_revisao": [
+          "resultado_fora_do_limite"
+        ],
+        "sinalizada": true,
+        "status_do_fluxo": "revisao_humana"
+      }
+    }
+  ]
+}

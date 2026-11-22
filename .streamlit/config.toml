@@ -1,0 +1,14 @@
+# Configuração da interface Streamlit (Etapa 6).
+[client]
+# Não mostra stack traces na página; os detalhes ficam no log do terminal.
+showErrorDetails = "none"
+toolbarMode = "minimal"
+
+[server]
+headless = true
+# Só aceita conexões desta máquina (protótipo sem autenticação).
+address = "localhost"
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false

@@ -69,6 +69,8 @@ with connect_readonly("data/processed/medprotocol.db") as conn:
 
 **Chaves de `get_patient_summary`:**
 - `paciente`, `data_referencia`, `consultas`, `ultimos_exames`.
+- `historico_exames` (Etapa 4): todos os exames até a data de referência, em ordem de coleta. Permite
+  responder sobre resultados anteriores sem citar registros que não estão no contexto.
 - `verificacoes`: mesmo formato de `verificacoes_esperadas` do dataset, calculado por `medprotocol.data.schedule.verification`. Nenhuma regra de prazo é duplicada aqui.
 - `pendencias`: exames vencidos ou ausentes.
 - `fora_do_limite`: exames acima ou abaixo do limite simulado.

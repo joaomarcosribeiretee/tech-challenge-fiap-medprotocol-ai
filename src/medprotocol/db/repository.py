@@ -252,6 +252,11 @@ def get_patient_summary(
         "data_referencia": reference_date.isoformat(),
         "consultas": [asdict(c) for c in consultations],
         "ultimos_exames": latest,
+        # Histórico completo até a data de referência (ordem de coleta). Sem ele, perguntas sobre
+        # evolução ou resultados anteriores levariam o modelo a citar exames que não viu.
+        "historico_exames": [
+            asdict(exam) for exam in exams if date.fromisoformat(exam.data_coleta) <= reference_date
+        ],
         "verificacoes": verifications,
         "pendencias": [v["exame"] for v in verifications if v["status"] in ("vencido", "ausente")],
         "fora_do_limite": [v["exame"] for v in verifications if v["fora_do_limite"]],
